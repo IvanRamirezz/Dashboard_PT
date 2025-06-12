@@ -1,11 +1,31 @@
 ---
-import Welcome from '../components/Welcome.astro';
-import Layout from '../layouts/Layout.astro';
-
-// Welcome to Astro! Wondering what to do next? Check out the Astro documentation at https://docs.astro.build
-// Don't want to use any of this? Delete everything in this file, the `assets`, `components`, and `layouts` directories, and start fresh.
+// src/pages/index.astro
+import DashboardLayout from "../layouts/DashboardLayout.astro";
+import "../styles/global.css";
 ---
+<DashboardLayout>
+  <h1 class="text-3xl font-bold mb-6">Bienvenido, Profesor Iván Ruiz Vargas</h1>
+  <div class="grid grid-cols-3 gap-6 mb-8">
+    <div class="bg-gray-100 p-4 rounded shadow text-center">
+      <p class="text-sm">Grupos registrados</p>
+      <p class="text-2xl font-bold">3</p>
+    </div>
+    <div class="bg-gray-100 p-4 rounded shadow text-center">
+      <p class="text-sm">Prácticas activas</p>
+      <p class="text-2xl font-bold">5</p>
+    </div>
+    <div class="bg-gray-100 p-4 rounded shadow text-center">
+      <p class="text-sm">Alumnos activos</p>
+      <p class="text-2xl font-bold">120</p>
+    </div>
+  </div>
 
-<Layout>
-	<Welcome />
-</Layout>
+  <div class="space-y-4">
+    <button class="flex items-center gap-2 bg-gray-100 p-4 rounded shadow hover:bg-gray-200 w-full">
+      ⬆️ Cargar grupo (Excel)
+    </button>
+    <button class="flex items-center gap-2 bg-gray-100 p-4 rounded shadow hover:bg-gray-200 w-full">
+      📝 Asignar práctica
+    </button>
+  </div>
+</DashboardLayout>
