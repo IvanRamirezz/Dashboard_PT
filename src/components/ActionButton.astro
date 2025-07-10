@@ -1,9 +1,10 @@
 ---
-const { label, icon, href } = Astro.props;
+const { icon, label, href } = Astro.props;
 ---
-<a class="action" href={href}>
+
+<a href={href} class="action">
   <div>
-    <img src={icon} class="icon" />
+    <img src={icon} class="icon" alt="" />
     {label}
   </div>
   <span>→</span>
