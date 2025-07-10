@@ -1,8 +1,5 @@
 ---
-const normalizePath = (path) =>
-  path.replace(/\/+$/, '') === '' ? '/' : path.replace(/\/+$/, '');
-
-const currentPath = normalizePath(Astro.url.pathname);
+const currentPath = Astro.url.pathname.replace(/\/+$/, '') || '/';
 const base = import.meta.env.BASE_URL;
 
 const navItems = [
@@ -19,14 +16,8 @@ const navItems = [
   </div>
   <nav>
     {navItems.map(({ href, icon, label }) => {
-      const path = href.replace(/^\//, '');
-      const fullHref = normalizePath(`${base}${path}`);
-
-      // Para el ítem "Inicio", aceptamos tanto base normal como base sin slash
-      const isActive =
-        href === '/'
-          ? currentPath === normalizePath(base) || currentPath === '/'
-          : currentPath === fullHref;
+      const fullHref = `${base}${href.replace(/^\//, '')}`.replace(/\/+$/, '') || '/';
+      const isActive = currentPath === fullHref;
 
       return (
         <a href={fullHref} class={`nav-item ${isActive ? 'active' : ''}`}>
