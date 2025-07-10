@@ -1,56 +1,28 @@
 ---
-import { supabase } from '../lib/supabaseClient';
-
-const { data: usuarios, error } = await supabase
-  .from('usuarios')
-  .select('*')
-  .order('puntaje', { ascending: false });
+import DashboardLayout from '../layouts/DashboardLayout.astro';
+import StatCard from '../components/Statcard.astro';
+import ActionButton from '../components/ActionButton.astro';
+import '../styles/style.css';
 ---
 
-<html lang="es">
-  <head>
-    <meta charset="UTF-8" />
-    <title>Dashboard de Usuarios</title>
-    <style>
-      body {
-        font-family: sans-serif;
-        padding: 2rem;
-      }
-      table {
-        width: 100%;
-        border-collapse: collapse;
-        margin-top: 1rem;
-      }
-      th, td {
-        border: 1px solid #ccc;
-        padding: 0.5rem;
-        text-align: center;
-      }
-      th {
-        background: #f0f0f0;
-      }
-    </style>
-  </head>
-  <body>
-    <h1>Ranking de Usuarios</h1>
+<head>
+  <meta charset="UTF-8" />
+  <title>Dashboard</title>
+</head>
 
-    {error && <p style="color:red;">Error al obtener los datos: {error.message}</p>}
+<DashboardLayout>
+  <section class="content">
+    <h2>Bienvenido, Profesor Iván Ruiz Vargas</h2>
 
-    <table>
-      <thead>
-        <tr>
-          <th>Nombre</th>
-          <th>Puntaje</th>
-        </tr>
-      </thead>
-      <tbody>
-        {usuarios?.map((user) => (
-          <tr>
-            <td>{user.nombre}</td>
-            <td>{user.puntaje}</td>
-          </tr>
-        ))}
-      </tbody>
-    </table>
-  </body>
-</html>
+    <div class="stats">
+      <StatCard label="Grupos registrados" value="3" />
+      <StatCard label="Prácticas activas" value="5" />
+      <StatCard label="Alumnos activos" value="120" />
+    </div>
+
+    <div class="actions">
+      <ActionButton href="#" icon="/public/assets/cargar.png" label="Cargar grupo (Excel)" />
+      <ActionButton href="#" icon="/public/assets/formacion.png" label="Asignar práctica" />
+    </div>
+  </section>
+</DashboardLayout>
