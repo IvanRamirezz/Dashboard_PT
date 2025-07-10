@@ -1,15 +1,11 @@
-// @ts-check
+// astro.config.mjs
 import { defineConfig } from 'astro/config';
 import tailwindcss from "@tailwindcss/vite";
 
-
-
-// https://astro.build/config
 export default defineConfig({
-  site: 'https://IvanRamirezz.github.io',
-  base: '/Dasboard_PT',
+  site: 'https://ivanramirezz.github.io/Dashboard_PT',
+  base: '/Dashboard_PT/',
   vite: {
     plugins: [tailwindcss()],
   },
 });
-
