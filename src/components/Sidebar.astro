@@ -1,8 +1,7 @@
 ---
-const currentPath = Astro.url.pathname; // Ej: '/Dashboard_PT/Asignar'
-const base = import.meta.env.BASE_URL; // Ej: '/Dashboard_PT/'
+const currentPath = Astro.url.pathname.replace(/\/+$/, '') || '/';
+const base = import.meta.env.BASE_URL;
 
-// Navegación sin modificar (buenas prácticas: mantenemos URLs limpias)
 const navItems = [
   { href: '/', icon: 'assets/inicio.png', label: 'Inicio' },
   { href: '/Asignar', icon: 'assets/asignar.png', label: 'Asignar' },
@@ -17,7 +16,7 @@ const navItems = [
   </div>
   <nav>
     {navItems.map(({ href, icon, label }) => {
-      const fullHref = `${base}${href.replace(/^\//, '')}`;
+      const fullHref = `${base}${href.replace(/^\//, '')}`.replace(/\/+$/, '') || '/';
       const isActive = currentPath === fullHref;
 
       return (
