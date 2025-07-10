@@ -1,24 +1,29 @@
+---
+// Obtener la ruta actual que esta en la pagina
+const currentPath = Astro.url.pathname;
+
+const navItems = [
+  { href: '/', icon: 'assets/inicio.png', label: 'Inicio' },
+  { href: '/Asignar', icon: 'assets/asignar.png', label: 'Asignar' },
+  { href: '/Alumnos', icon: 'assets/alumno.png', label: 'Alumnos' },
+  { href: '/Cargar-grupo', icon: 'assets/cargando.png', label: 'Cargar grupo' },
+];
+---
+
 <div class="sidebar">
   <div class="sidebar-title">
     <img src="assets/icon.png" alt="icono" class="icon" />
     Dashboard
   </div>
   <nav>
-    <a href="/" class="nav-item active">
-      <img src="assets/inicio.png"  class="icon" />
-      Inicio
-    </a>
-    <a href="/asignar" class="nav-item">
-      <img src="assets/asignar.png" class="icon" />
-      Asignar
-    </a>
-    <a href="/alumnos" class="nav-item">
-      <img src="assets/alumno.png" class="icon" />
-      Alumnos
-    </a>
-    <a href="/cargar-grupo" class="nav-item">
-      <img src="assets/cargando.png" class="icon" />
-      Cargar grupo
-    </a>
+    {navItems.map(({ href, icon, label }) => (
+      <a
+        href={href}
+        class={`nav-item ${currentPath === href ? 'active' : ''}`}
+      >
+        <img src={icon} class="icon" />
+        {label}
+      </a>
+    ))}
   </nav>
 </div>
