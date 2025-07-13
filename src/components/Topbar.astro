@@ -1,4 +1,37 @@
+---
+const { toggleSidebar, pageTitle = "Dashboard principal" } = Astro.props;
+import user from "../../public/assets/user.png";
+---
 <header class="topbar">
-  <h1>Dashboard principal</h1>
-  <span>Inicio</span>
+  <button class="menu-toggle" onclick={toggleSidebar}>☰</button>
+  <h1>{pageTitle}</h1>
+  <img src={user.src} alt="Usuario" class="user-avatar" />
 </header>
+
+<style>
+  .topbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background-color: white;
+    padding: 1rem;
+    border-bottom: 1px solid #e5e7eb;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+
+  .menu-toggle {
+    font-size: 1.5rem;
+    background: none;
+    border: none;
+    cursor: pointer;
+  }
+
+  .user-avatar {
+    width: 47px;
+    height: 47px;
+    border-radius: 50%;
+    object-fit: cover;
+  }
+</style>
