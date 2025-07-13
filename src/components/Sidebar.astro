@@ -1,12 +1,11 @@
 ---
-import cargargrupo from "../../public/assets/cargar.png";
-import asignar_practica from "../../public/assets/formacion.png";;
+import inicio from "../../public/assets/inicio.png";
 const currentPath = Astro.url.pathname.replace(/\/+$/, '') || '/';
 const base = import.meta.env.BASE_URL;
 
 
 const navItems = [
-  { href: '/', icon: '../../public/assets/inicio.png', label: 'Inicio' },
+  { href: '/', icon: inicio.src, label: 'Inicio' },
   { href: '/Asignar', icon: '../../public/assets/asignar.png', label: 'Asignar' },
   { href: '/Alumnos', icon: '../../public/assets/alumno.png', label: 'Alumnos' },
   { href: '/Cargar-grupo', icon: '../../public/assets/cargando.png', label: 'Cargar grupo' },
