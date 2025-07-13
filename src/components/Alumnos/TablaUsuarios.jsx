@@ -12,6 +12,7 @@ export default function TablaUsuarios() {
   const [error, setError] = useState(null);
 
   // Función para obtener los datos desde Supabase
+// Petición HTTP de tipo GET al backend de Supabase, usando la biblioteca oficial @supabase/supabase-js
   const obtenerUsuarios = async () => {
     setLoading(true); // Iniciamos la carga
     const { data, error } = await supabase
