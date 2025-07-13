@@ -2,14 +2,16 @@
 import DashboardLayout from '../layouts/DashboardLayout.astro';
 import StatCard from '../components/Statcard.astro';
 import ActionButton from '../components/ActionButton.astro';
+import cargargrupo from "../../public/assets/cargar.png";
 import '../styles/style.css';
+
 
 const base = import.meta.env.BASE_URL;
 ---
 
 <DashboardLayout>
   <section class="content">
-    <h2>Bienvenido, Profesor Iván Ruiz Vargas</h2>
+    <h2>Cargar grupo</h2>
 
     <div class="stats">
       <StatCard label="Grupos registrados" value="3" />
@@ -18,8 +20,8 @@ const base = import.meta.env.BASE_URL;
     </div>
 
     <div class="actions">
-      <ActionButton href="#" icon={`${base}assets/cargar.png`} label="Cargar grupo (Excel)" />
-      <ActionButton href="#" icon={`${base}assets/formacion.png`} label="Asignar práctica" />
+      <ActionButton href="#" icon={cargargrupo.src} label="Cargar grupo (Excel)" />
+      <ActionButton href="#" icon=/assets/formacion.png label="Asignar práctica" />
     </div>
   </section>
 </DashboardLayout>
