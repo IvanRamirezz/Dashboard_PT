@@ -2,6 +2,8 @@
 import DashboardLayout from '../layouts/DashboardLayout.astro';
 import StatCard from '../components/Statcard.astro';
 import ActionButton from '../components/ActionButton.astro';
+import cargargrupo from "../../public/assets/cargar.png";
+import asignar_practica from "../../public/assets/formacion.png";
 import '../styles/style.css';
 
 const base = import.meta.env.BASE_URL;
@@ -18,8 +20,8 @@ const base = import.meta.env.BASE_URL;
     </div>
 
     <div class="actions">
-      <ActionButton href="#" icon={`${base}assets/cargar.png`} label="Cargar grupo (Excel)" />
-      <ActionButton href="#" icon={`${base}assets/formacion.png`} label="Asignar práctica" />
+      <ActionButton href="#" icon={cargargrupo.src} label="Cargar grupo (Excel)" />
+      <ActionButton href="#" icon={asignar_practica.src} label="Asignar práctica" />
     </div>
   </section>
 </DashboardLayout>
