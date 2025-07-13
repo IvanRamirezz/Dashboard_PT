@@ -1,11 +1,11 @@
 ---
-import inicio from "../../public/assets/inicio.png";
+import icono from "../../public/assets/icon.png";
 const currentPath = Astro.url.pathname.replace(/\/+$/, '') || '/';
 const base = import.meta.env.BASE_URL;
 
 
 const navItems = [
-  { href: '/', icon: inicio.src, label: 'Inicio' },
+  { href: '/', icon: icono.src, label: 'Inicio' },
   { href: '/Asignar', icon: '../../public/assets/asignar.png', label: 'Asignar' },
   { href: '/Alumnos', icon: '../../public/assets/alumno.png', label: 'Alumnos' },
   { href: '/Cargar-grupo', icon: '../../public/assets/cargando.png', label: 'Cargar grupo' },
@@ -13,7 +13,7 @@ const navItems = [
 ---
 <div class="sidebar">
   <div class="sidebar-title">
-    <img src=../../public/assets/icon.png alt="icono" class="icon" />
+    <img src={icono.src} alt="icono" class="icon" />
     Dashboard
   </div>
   <nav>
