@@ -1,69 +1,11 @@
 ---
 import DashboardLayout from '../layouts/DashboardLayout.astro';
-import StatCard from '../components/Home/Statcard.astro';
-import ActionButton from '../components/Home/ActionButton.astro';
-import cargargrupo from "../../public/assets/cargar.png";
-import asignar_practica from "../../public/assets/formacion.png";
-import { supabase } from '../lib/supabaseClient';
 import '../styles/style.css';
-
-// Consulta a Supabase
-const { data: usuarios, error } = await supabase
-  .from('usuarios')
-  .select('*')
-  .order('puntaje', { ascending: false });
+import TablaUsuarios from '../components/Alumnos/TablaUsuarios.jsx'; // Asegúrate que esta ruta sea correcta
 ---
 
 <DashboardLayout pageTitle="Inicio">
   <section class="content">
-
-    <h2>Calificaciones de alumnos (prueba)</h2>
-
-    {error && <p style="color: red;">Error al obtener los datos: {error.message}</p>}
-
-    <table class="ranking-table">
-      <thead>
-        <tr>
-          <th>Nombre</th>
-          <th>Puntaje</th>
-        </tr>
-      </thead>
-      <tbody>
-        {usuarios?.map((user) => (
-          <tr>
-            <td>{user.nombre}</td>
-            <td>{user.puntaje}</td>
-          </tr>
-        ))}
-      </tbody>
-    </table>
+    <TablaUsuarios client:load />
   </section>
-
-  <style>
-    .ranking-table {
-      width: 100%;
-      border-collapse: collapse;
-      margin-top: 2rem;
-      background: white;
-      border: 1px solid #ccc;
-      border-radius: 8px;
-      overflow: hidden;
-    }
-
-    .ranking-table th,
-    .ranking-table td {
-      padding: 0.75rem;
-      text-align: center;
-      border-bottom: 1px solid #eee;
-    }
-
-    .ranking-table th {
-      background-color: #f0f0f0;
-      font-weight: bold;
-    }
-
-    .ranking-table tr:last-child td {
-      border-bottom: none;
-    }
-  </style>
 </DashboardLayout>
