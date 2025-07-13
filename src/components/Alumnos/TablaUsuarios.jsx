@@ -1,41 +1,60 @@
+// Importamos los hooks de React y la conexión con Supabase
 import { useEffect, useState } from 'react';
 import { supabase } from '../../lib/supabaseClient';
 
+// Componente principal
 export default function TablaUsuarios() {
+  // Estado para guardar los usuarios
   const [usuarios, setUsuarios] = useState([]);
+  // Estado para saber si estamos cargando
   const [loading, setLoading] = useState(true);
+  // Estado para manejar errores
   const [error, setError] = useState(null);
 
+  // Función para obtener los datos desde Supabase
   const obtenerUsuarios = async () => {
-    setLoading(true);
+    setLoading(true); // Iniciamos la carga
     const { data, error } = await supabase
-      .from('usuarios')
-      .select('*')
-      .order('puntaje', { ascending: false });
+      .from('usuarios') // Nombre de la tabla en Supabase
+      .select('*')      // Seleccionamos todos los campos
+      .order('puntaje', { ascending: false }); // Ordenamos por puntaje descendente
 
+    // Si hay error, lo guardamos en el estado
     if (error) {
       setError(error.message);
       setUsuarios([]);
     } else {
+      // Si no hay error, actualizamos los datos
       setError(null);
       setUsuarios(data);
     }
 
-    setLoading(false);
+    setLoading(false); // Finalizamos la carga
   };
 
+  // Al montar el componente, cargamos los datos automáticamente
   useEffect(() => {
     obtenerUsuarios();
   }, []);
 
+  // Renderizado del componente
   return (
     <div style={styles.contenedor}>
+      {/* Título */}
       <h2 style={styles.titulo}>📋 Calificaciones de alumnos</h2>
-      <button onClick={obtenerUsuarios} style={styles.boton}>🔄 Actualizar tabla</button>
 
+      {/* Botón para actualizar la tabla */}
+      <button onClick={obtenerUsuarios} style={styles.boton}>
+        🔄 Actualizar tabla
+      </button>
+
+      {/* Si está cargando, mostramos mensaje */}
       {loading && <p>Cargando datos...</p>}
+
+      {/* Si hay error, mostramos mensaje de error */}
       {error && <p style={{ color: 'red' }}>Error: {error}</p>}
 
+      {/* Si ya cargó y no hay error, mostramos la tabla */}
       {!loading && (
         <div style={styles.wrapper}>
           <table style={styles.tabla}>
@@ -46,8 +65,12 @@ export default function TablaUsuarios() {
               </tr>
             </thead>
             <tbody>
+              {/* Recorremos los usuarios y los mostramos en filas */}
               {usuarios.map((user, index) => (
-                <tr key={user.id} style={index % 2 === 0 ? styles.filaPar : styles.filaImpar}>
+                <tr
+                  key={user.id}
+                  style={index % 2 === 0 ? styles.filaPar : styles.filaImpar}
+                >
                   <td style={styles.celda}>{user.nombre}</td>
                   <td style={styles.celda}>{user.puntaje}</td>
                 </tr>
@@ -60,32 +83,42 @@ export default function TablaUsuarios() {
   );
 }
 
+// Objeto de estilos en línea
 const styles = {
+  // Estilo del contenedor general
   contenedor: {
     padding: '1rem',
     fontFamily: 'Segoe UI, sans-serif',
   },
+
+  // Título principal
   titulo: {
     marginBottom: '0.5rem',
-    fontSize: '1.5rem',
+    fontSize: '2rem',
     color: '#1f2937',
   },
+
+  // Botón de actualización
   boton: {
     backgroundColor: '#1d4ed8',
     color: 'white',
     border: 'none',
-    padding: '0.5rem 1rem',
-    borderRadius: '8px',
+    padding: '0.8rem 1rem',
+    borderRadius: '10px',
     cursor: 'pointer',
     fontWeight: 'bold',
     marginBottom: '1rem',
     boxShadow: '0 2px 6px rgba(0,0,0,0.1)',
   },
+
+  // Contenedor de la tabla con sombra
   wrapper: {
     overflowX: 'auto',
     borderRadius: '10px',
     boxShadow: '0 4px 12px rgba(0,0,0,0.05)',
   },
+
+  // Estilo general de la tabla
   tabla: {
     width: '100%',
     borderCollapse: 'collapse',
@@ -93,6 +126,8 @@ const styles = {
     borderRadius: '10px',
     overflow: 'hidden',
   },
+
+  // Estilo de celdas de encabezado
   encabezado: {
     backgroundColor: '#f1f5f9',
     color: '#1e293b',
@@ -101,14 +136,20 @@ const styles = {
     fontWeight: '600',
     fontSize: '1rem',
   },
+
+  // Fila par (blanca)
   filaPar: {
     backgroundColor: '#ffffff',
     transition: 'background-color 0.3s',
   },
+
+  // Fila impar (gris suave)
   filaImpar: {
     backgroundColor: '#f9fafb',
     transition: 'background-color 0.3s',
   },
+
+  // Estilo de celdas normales
   celda: {
     padding: '0.75rem 1rem',
     borderBottom: '1px solid #e2e8f0',
