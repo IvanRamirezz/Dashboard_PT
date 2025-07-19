@@ -1,10 +1,12 @@
 ---
 import { supabase } from '../lib/supabaseClient'
+const { error } = await supabase.auth.signOut();
 
-// Cierra sesión
-await supabase.auth.signOut()
-
-// Redirige de forma segura usando URL absoluta
-const redirectTo = new URL('/login', Astro.request.url)
-return Response.redirect(redirectTo, 302)
+// Redirige a login con una URL absoluta
+return new Response(null, {
+  status: 302,
+  headers: {
+    Location: '/login'
+  }
+});
 ---
