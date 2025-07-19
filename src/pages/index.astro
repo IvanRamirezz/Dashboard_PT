@@ -1,25 +1,20 @@
 ---
-import DashboardLayout from '../layouts/DashboardLayout.astro';
-import StatCard from '../components/Home/Statcard.astro';
-import ActionButton from '../components/Home/ActionButton.astro';
-import cargargrupo from "../../public/assets/cargar.png";
-import asignar_practica from "../../public/assets/formacion.png";
-import '../styles/style.css';
+import LoginForm from '../components/LoginForm.jsx';
+import '../styles/login.css';
 ---
 
-<DashboardLayout>
-  <section class="content">
-    <h2>Bienvenido, Profesor Iván Ruiz Vargas</h2>
-
-    <div class="stats">
-      <StatCard label="Grupos registrados" value="3" />
-      <StatCard label="Prácticas activas" value="5" />
-      <StatCard label="Alumnos activos" value="120" />
-    </div>
-
-    <div class="actions">
-      <ActionButton href="#" icon={cargargrupo.src} label="Cargar grupo (Excel)" />
-      <ActionButton href="#" icon={asignar_practica.src} label="Asignar práctica" />
-    </div>
-  </section>
-</DashboardLayout>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Iniciar sesión</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  </head>
+  <body class="login-page">
+    <main class="login-container">
+      <div class="login-card">
+        <h1 class="login-title">Iniciar Sesión</h1>
+        <LoginForm client:load />
+      </div>
+    </main>
+  </body>
+</html>

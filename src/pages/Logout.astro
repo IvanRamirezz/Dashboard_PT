@@ -1,0 +1,6 @@
+---
+import { supabase } from '../lib/supabaseClient'
+
+await supabase.auth.signOut()
+return Response.redirect('/login', 302)
+---

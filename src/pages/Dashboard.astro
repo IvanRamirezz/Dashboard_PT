@@ -1,0 +1,29 @@
+---
+import DashboardLayout from '../layouts/DashboardLayout.astro';
+import StatCard from '../components/Home/Statcard.astro';
+import ActionButton from '../components/Home/ActionButton.astro';
+import AuthGuard from '../components/AuthGuard';
+import Greeting from '../components/Home/Greeting';
+import cargargrupo from "../../public/assets/cargar.png";
+import asignar_practica from "../../public/assets/formacion.png";
+import '../styles/style.css';
+---
+
+<DashboardLayout>
+  <AuthGuard client:load>
+    <section class="content">
+      <Greeting client:load />
+
+      <div class="stats">
+        <StatCard label="Grupos registrados" value="3" />
+        <StatCard label="Prácticas activas" value="5" />
+        <StatCard label="Alumnos activos" value="120" />
+      </div>
+
+      <div class="actions">
+        <ActionButton href="#" icon={cargargrupo.src} label="Cargar grupo (Excel)" />
+        <ActionButton href="#" icon={asignar_practica.src} label="Asignar práctica" />
+      </div>
+    </section>
+  </AuthGuard>
+</DashboardLayout>
