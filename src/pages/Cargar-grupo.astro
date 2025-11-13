@@ -1,25 +1,11 @@
 ---
 import DashboardLayout from '../layouts/DashboardLayout.astro';
-import StatCard from '../components/Home/Statcard.astro';
-import ActionButton from '../components/Home/ActionButton.astro';
-import cargargrupo from "../../public/assets/cargar.png";
-import asignar_practica from "../../public/assets/formacion.png";
 import '../styles/style.css';
+import CargaGrupo from '../components/Alumnos/Cargar_Grupo';
 ---
 
-<DashboardLayout>
+<DashboardLayout pageTitle="CargarGrupo">
   <section class="content">
-    <h2>Bienvenido, Profesor Iván Ruiz Vargas</h2>
-
-    <div class="stats">
-      <StatCard label="Grupos registrados" value="3" />
-      <StatCard label="Prácticas activas" value="5" />
-      <StatCard label="Alumnos activos" value="120" />
-    </div>
-
-    <div class="actions">
-      <ActionButton href="#" icon={cargargrupo.src} label="Cargar grupo (Excel)" />
-      <ActionButton href="#" icon={asignar_practica.src} label="Asignar práctica" />
-    </div>
+    <CargaGrupo client:load />
   </section>
 </DashboardLayout>

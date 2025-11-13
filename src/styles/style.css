@@ -384,3 +384,86 @@ body {
   color: #1f2937;
   font-weight: 500;
 }
+
+/* ====== Carga del grupo ====== */
+.upload-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  gap: 1.5rem;
+  margin-top: -2rem;
+}
+
+.upload-header h1 {
+  font-size: 1.8rem;
+  font-weight: 800;
+  color: #111827;
+  /* margin-bottom: .9rem; */
+}
+
+.upload-header p {
+  color: #374151;
+  font-size: 0.95rem;
+  max-width: 400px;
+  line-height: 1.4;
+}
+
+/* Recuadro punteado */
+.upload-box {
+  border: 2px dashed #cbd5e1;
+  border-radius: 12px;
+  padding: 2rem 1rem;
+  width: min(500px, 90%);
+  background: #fff;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  transition: all 0.3s ease;
+}
+
+.upload-box.drag-over {
+  background: #f8fafc;
+  border-color: #60a5fa;
+}
+
+.upload-text {
+  color: #1f2937;
+  font-size: 1.1rem;
+}
+
+/* Botones */
+.upload-btn {
+  border: none;
+  border-radius: 10px;
+  padding: 0.75rem 1.5rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.upload-btn.primary {
+  background: #294aa6;
+  color: #fff;
+  box-shadow: 0 2px 8px rgba(41, 74, 166, 0.15);
+}
+
+.upload-btn.primary:hover {
+  filter: brightness(0.95);
+}
+
+.upload-btn.secondary {
+  background: #e5ecff;
+  color: #1f3a8a;
+}
+
+.upload-btn.secondary:hover {
+  background: #dbe7ff;
+}
+
+.upload-btn:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
