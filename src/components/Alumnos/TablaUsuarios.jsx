@@ -13,25 +13,28 @@ export default function TablaUsuarios() {
 
   // Función para obtener los datos desde Supabase
 // Petición HTTP de tipo GET al backend de Supabase, usando la biblioteca oficial @supabase/supabase-js
-  const obtenerUsuarios = async () => {
-    setLoading(true); // Iniciamos la carga
-    const { data, error } = await supabase
-      .from('usuarios') // Nombre de la tabla en Supabase
-      .select('*')      // Seleccionamos todos los campos
-      .order('puntaje', { ascending: false }); // Ordenamos por puntaje descendente
+const obtenerUsuarios = async () => {
+  setLoading(true);
+  try {
+    const { data, error, status } = await supabase
+      .from('Usuarios')
+      .select('*')
+      .order('puntaje', { ascending: false });
 
-    // Si hay error, lo guardamos en el estado
-    if (error) {
-      setError(error.message);
-      setUsuarios([]);
-    } else {
-      // Si no hay error, actualizamos los datos
-      setError(null);
-      setUsuarios(data);
-    }
+    console.log('[status]', status);
+    if (error) throw error;
 
-    setLoading(false); // Finalizamos la carga
-  };
+    setUsuarios(data ?? []);
+    setError(null);
+  } catch (e) {
+    console.error('[Supabase error]', e);
+    setError(`${e.code ?? ''} ${e.message ?? 'Error'}`);
+    setUsuarios([]);
+  } finally {
+    setLoading(false);
+  }
+};
+
 
   // Al montar el componente, cargamos los datos automáticamente
   useEffect(() => {
