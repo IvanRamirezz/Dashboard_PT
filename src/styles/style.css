@@ -215,3 +215,172 @@ body {
     max-width: 100%;
   }
 }
+
+/* ====== Panel Asignar práctica ====== */
+.asignar-wrap{
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  margin-top: 0; /* sin espacio extra arriba */
+  text-align: center;
+}
+
+.asignar-head h1{
+  font-size: clamp(1.3rem, 2.5vw, 1.6rem);
+  font-weight: 700;
+  color: #111827;
+  margin-bottom: 0.4rem;
+}
+
+.asignar-head small{
+  color:#6b7280;
+  font-weight: 500;
+}
+
+.asignar-desc {
+  font-size: 0.95rem;
+  color: #4b5563;
+  margin-bottom: 1.5rem;
+}
+
+.asignar-card{
+  width: min(500px, 90%);
+  display: flex;
+  flex-direction: column;
+  gap: 1.2rem;
+  background: transparent; /* sin recuadro */
+  border: none;
+  box-shadow: none;
+}
+
+.asignar-row {
+  text-align: left;
+}
+
+.asignar-label{
+  display:block;
+  margin-bottom: .4rem;
+  font-size:.95rem;
+  color:#374151;
+  font-weight:600;
+}
+
+.asignar-input{
+  width:100%;
+  border:1px solid #d1d5db;
+  border-radius:10px;
+  padding:.7rem .9rem;
+  font-size:1rem;
+  outline:none;
+  background:#fff;
+}
+
+.asignar-input:focus{
+  border-color:#3b82f6;
+  box-shadow:0 0 0 3px rgba(59,130,246,.15);
+}
+
+.asignar-code-row{
+  display:flex;
+  gap:.75rem;
+  align-items:center;
+}
+
+.asignar-code{
+  flex:1;
+  font-weight:700;
+  letter-spacing:.06em;
+  text-align:center;
+}
+
+.asignar-actions{
+  display:flex;
+  justify-content:center;
+  margin-top: 1rem;
+}
+
+.asignar-btn{
+  border:none;
+  border-radius:12px;
+  padding:.75rem 1.25rem;
+  font-weight:600;
+  cursor:pointer;
+}
+
+.asignar-btn.primario{
+  background:#294aa6;
+  color:#fff;
+}
+
+.asignar-btn.primario:hover{
+  filter:brightness(0.95);
+}
+
+.asignar-btn.secundario{
+  background:#e5ecff;
+  color:#1f3a8a;
+}
+
+.asignar-btn.secundario:hover{
+  filter:brightness(0.97);
+}
+
+@keyframes asignarPulse{
+  from{ box-shadow:0 0 0 0 rgba(59,130,246,.35);}
+  to{ box-shadow:0 0 0 10px rgba(59,130,246,0);}
+}
+
+.asignar-pulse{
+  animation: asignarPulse .5s ease-out 1;
+}
+
+/* --- Estilo personalizado del select --- */
+.asignar-input[type="text"],
+.asignar-input[type="number"],
+.asignar-input[type="email"],
+.asignar-input[type="password"],
+.asignar-input:not([type]) {
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+}
+
+/* Estilo específico para el SELECT */
+#practica-select {
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  background-color: #fff;
+  border: 1px solid #d1d5db;
+  border-radius: 10px;
+  padding: 0.7rem 1rem;
+  font-size: 1rem;
+  font-weight: 500;
+  color: #1f2937;
+  width: 100%;
+  outline: none;
+  cursor: pointer;
+  background-image: linear-gradient(45deg, transparent 50%, #294aa6 50%), 
+                    linear-gradient(135deg, #294aa6 50%, transparent 50%);
+  background-position: calc(100% - 18px) center, calc(100% - 13px) center;
+  background-size: 6px 6px, 6px 6px;
+  background-repeat: no-repeat;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+#practica-select:hover {
+  border-color: #294aa6;
+}
+
+#practica-select:focus {
+  border-color: #294aa6;
+  box-shadow: 0 0 0 3px rgba(41, 74, 166, 0.15);
+}
+
+/* Opciones internas */
+#practica-select option {
+  background-color: #fff;
+  color: #1f2937;
+  font-weight: 500;
+}
