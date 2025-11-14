@@ -17,7 +17,7 @@ const obtenerUsuarios = async () => {
   setLoading(true);
   try {
     const { data, error, status } = await supabase
-      .from('Usuarios')
+      .from('Alumnos')
       .select('*')
       .order('puntaje', { ascending: false });
 
