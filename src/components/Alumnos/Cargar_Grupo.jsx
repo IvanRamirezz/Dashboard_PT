@@ -94,17 +94,111 @@ export default function CargaGrupo() {
     if (f) handleFile(f);
   };
 
+  // --- ENVIAR CSV A SUPABASE: CREA GRUPOS NUEVOS + ALUMNOS ---
   const handleUpload = async () => {
     if (!file) return alert('Selecciona un archivo primero.');
+    if (rows.length === 0) {
+      return alert('El archivo no tiene filas válidas (Nombre, Boleta, Grupo).');
+    }
+
     setLoading(true);
     try {
-      const path = `grupos/${Date.now()}_${file.name}`;
-      const { error } = await supabase.storage.from('grupos').upload(path, file);
-      if (error) throw error;
-      alert(`✅ Archivo cargado correctamente: ${file.name}`);
+      // 1) Obtener nombres de grupo únicos del CSV
+      const nombresGruposCSV = Array.from(
+        new Set(
+          rows
+            .map((r) => r.grupo?.trim())
+            .filter((g) => g && g.length > 0)
+        )
+      );
+
+      if (nombresGruposCSV.length === 0) {
+        alert('No se encontraron grupos en el CSV.');
+        setLoading(false);
+        return;
+      }
+
+      // 2) Traer grupos existentes con esos nombres
+      const { data: gruposExistentes, error: gruposError } = await supabase
+        .from('Grupos')
+        .select('id, Nombre')
+        .in('Nombre', nombresGruposCSV);
+
+      if (gruposError) throw gruposError;
+
+      const mapaGrupos = new Map();
+      (gruposExistentes ?? []).forEach((g) => {
+        mapaGrupos.set(g.Nombre.trim().toLowerCase(), g.id);
+      });
+
+      // 3) Detectar qué grupos del CSV NO existen aún
+      const gruposFaltantes = nombresGruposCSV.filter(
+        (nombre) => !mapaGrupos.has(nombre.trim().toLowerCase())
+      );
+
+      // 4) Insertar grupos faltantes
+      if (gruposFaltantes.length > 0) {
+        const nuevosGruposPayload = gruposFaltantes.map((nombre) => ({
+          Nombre: nombre,
+          Profesor_id: null, // pon aquí el id del profesor si lo tienes
+        }));
+
+        const { data: gruposInsertados, error: insertGruposError } = await supabase
+          .from('Grupos')
+          .insert(nuevosGruposPayload)
+          .select('id, Nombre');
+
+        if (insertGruposError) throw insertGruposError;
+
+        (gruposInsertados ?? []).forEach((g) => {
+          mapaGrupos.set(g.Nombre.trim().toLowerCase(), g.id);
+        });
+      }
+
+      // 5) Construir arreglo de alumnos a insertar en Usuarios
+      const alumnosAInsertar = [];
+
+      for (const r of rows) {
+        if (!r.nombre || !r.boleta || !r.grupo) continue;
+
+        const keyGrupo = r.grupo.trim().toLowerCase();
+        const grupoId = mapaGrupos.get(keyGrupo);
+
+        if (!grupoId) {
+          console.warn('No se encontró/creó Grupo_id para', r.grupo);
+          continue;
+        }
+
+        alumnosAInsertar.push({
+          Nombre: r.nombre,
+          Boleta: r.boleta,
+          Grupo_id: grupoId,
+          // puedes completar más campos si quieres:
+          // Apellido_Paterno: null,
+          // Apellido_Materno: null,
+          // Contrasena_Hash: null,
+          // Rol_id: null,
+        });
+      }
+
+      if (alumnosAInsertar.length === 0) {
+        alert('No se pudo generar ningún alumno para insertar.');
+        setLoading(false);
+        return;
+      }
+
+      // 6) Insertar alumnos en Usuarios
+      const { error: insertAlumnosError } = await supabase
+        .from('Usuarios')
+        .insert(alumnosAInsertar);
+
+      if (insertAlumnosError) throw insertAlumnosError;
+
+      alert(`✅ Se insertaron ${alumnosAInsertar.length} alumnos y se crearon los grupos necesarios.`);
       clearFile();
     } catch (e) {
-      alert(`❌ Error al cargar: ${e.message}`);
+      console.error(e);
+      alert(`❌ Error al guardar en Supabase: ${e.message ?? e}`);
     } finally {
       setLoading(false);
     }
@@ -141,7 +235,7 @@ export default function CargaGrupo() {
           type="file"
           ref={inputRef}
           onChange={onChoose}
-          accept=".csv,.xlsx,.xls"
+          accept=".csv"
           hidden
         />
 
@@ -166,8 +260,6 @@ export default function CargaGrupo() {
           </button>
         )}
       </div>
-
-      {/* 👇 Se quitó el botón "Cargar" que estaba aquí */}
 
       {/* Modal de vista previa */}
       {showPreview && rows.length > 0 && (
