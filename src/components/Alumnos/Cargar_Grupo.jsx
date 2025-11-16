@@ -45,18 +45,23 @@ export default function CargaGrupo() {
         .split(',')
         .map((h) => h.trim().toLowerCase());
 
-      const idxNombre = headers.findIndex((h) => h === 'nombre');
-      const idxBoleta = headers.findIndex((h) => h === 'boleta');
-      const idxGrupo  = headers.findIndex((h) => h === 'grupo');
+        const idxNombre = headers.findIndex((h) => h === 'nombre');
+        const idxApeMat = headers.findIndex((h) => h === 'apellido_materno');
+        const idxApePat = headers.findIndex((h) => h === 'apellido_paterno');
+        const idxBoleta = headers.findIndex((h) => h === 'boleta');
+        const idxGrupo  = headers.findIndex((h) => h === 'grupo');
 
       const parsed = lines
         .slice(1)
         .map((line) => {
           const cols = line.split(',');
+
           return {
-            nombre: cols[idxNombre]?.trim() || '',
-            boleta: cols[idxBoleta]?.trim() || '',
-            grupo:  cols[idxGrupo]?.trim()  || '',
+            nombre:           cols[idxNombre]?.trim()   || '',
+            apellidoMaterno:  cols[idxApeMat]?.trim()   || '',
+            apellidoPaterno:  cols[idxApePat]?.trim()   || '',
+            boleta:           cols[idxBoleta]?.trim()   || '',
+            grupo:            cols[idxGrupo]?.trim()    || '',
           };
         })
         .filter((r) => r.nombre || r.boleta || r.grupo);
@@ -94,7 +99,7 @@ export default function CargaGrupo() {
     if (f) handleFile(f);
   };
 
-  // --- ENVIAR CSV A SUPABASE: CREA GRUPOS NUEVOS + ALUMNOS ---
+  // --- ENVIAR CSV A SUPABASE: CREA GRUPOS NUEVOS + ALUMNOS (SIN BOLETAS REPETIDAS) ---
   const handleUpload = async () => {
     if (!file) return alert('Selecciona un archivo primero.');
     if (rows.length === 0) {
@@ -140,7 +145,7 @@ export default function CargaGrupo() {
       if (gruposFaltantes.length > 0) {
         const nuevosGruposPayload = gruposFaltantes.map((nombre) => ({
           Nombre: nombre,
-          Profesor_id: null, // pon aquí el id del profesor si lo tienes
+          Profesor_id: null,
         }));
 
         const { data: gruposInsertados, error: insertGruposError } = await supabase
@@ -155,46 +160,109 @@ export default function CargaGrupo() {
         });
       }
 
-      // 5) Construir arreglo de alumnos a insertar en Usuarios
+      // 5) Obtener boletas del CSV (únicas)
+      const boletasCSV = Array.from(
+        new Set(
+          rows
+            .map((r) => r.boleta?.trim())
+            .filter((b) => b && b.length > 0)
+        )
+      );
+
+      // 6) Traer boletas ya existentes en Usuarios
+      const { data: alumnosExistentes, error: alumnosExistentesError } = await supabase
+        .from('Usuarios')
+        .select('Boleta')
+        .in('Boleta', boletasCSV);
+
+      if (alumnosExistentesError) throw alumnosExistentesError;
+
+      const boletasYaRegistradas = new Set(
+        (alumnosExistentes ?? [])
+          .map((a) => a.Boleta?.trim())
+          .filter(Boolean)
+      );
+
+      // 7) Construir arreglo de alumnos a insertar en Usuarios,
+      //    saltando boletas que ya existen o duplicadas en el propio CSV
       const alumnosAInsertar = [];
+      const boletasUsadasEnCSV = new Set();
+      const boletasSaltadasPorDuplicado = new Set();
+      const boletasSaltadasPorExistente = new Set();
 
       for (const r of rows) {
         if (!r.nombre || !r.boleta || !r.grupo) continue;
 
+        const boleta = r.boleta.trim();
         const keyGrupo = r.grupo.trim().toLowerCase();
         const grupoId = mapaGrupos.get(keyGrupo);
 
-        if (!grupoId) {
-          console.warn('No se encontró/creó Grupo_id para', r.grupo);
+        if (!grupoId) continue;
+
+        // Duplicado dentro del propio CSV
+        if (boletasUsadasEnCSV.has(boleta)) {
+          boletasSaltadasPorDuplicado.add(boleta);
           continue;
         }
 
+        // Ya existe en la base
+        if (boletasYaRegistradas.has(boleta)) {
+          boletasSaltadasPorExistente.add(boleta);
+          continue;
+        }
+
+        boletasUsadasEnCSV.add(boleta);
+
         alumnosAInsertar.push({
           Nombre: r.nombre,
-          Boleta: r.boleta,
+          Apellido_Paterno: r.apellidoPaterno || null,
+          Apellido_Materno: r.apellidoMaterno || null,
+          Boleta: boleta,
           Grupo_id: grupoId,
-          // puedes completar más campos si quieres:
-          // Apellido_Paterno: null,
-          // Apellido_Materno: null,
           // Contrasena_Hash: null,
           // Rol_id: null,
         });
       }
 
       if (alumnosAInsertar.length === 0) {
-        alert('No se pudo generar ningún alumno para insertar.');
+        let msg = 'No se pudo generar ningún alumno para insertar.';
+        if (boletasSaltadasPorExistente.size > 0) {
+          msg +=
+            '\nBoletas ya registradas que se omitieron: ' +
+            Array.from(boletasSaltadasPorExistente).join(', ');
+        }
+        if (boletasSaltadasPorDuplicado.size > 0) {
+          msg +=
+            '\nBoletas duplicadas dentro del CSV que se omitieron: ' +
+            Array.from(boletasSaltadasPorDuplicado).join(', ');
+        }
+        alert(msg);
         setLoading(false);
         return;
       }
 
-      // 6) Insertar alumnos en Usuarios
+      // 8) Insertar alumnos en Usuarios
       const { error: insertAlumnosError } = await supabase
         .from('Usuarios')
         .insert(alumnosAInsertar);
 
       if (insertAlumnosError) throw insertAlumnosError;
 
-      alert(`✅ Se insertaron ${alumnosAInsertar.length} alumnos y se crearon los grupos necesarios.`);
+      let mensaje = `✅ Se insertaron ${alumnosAInsertar.length} alumnos nuevos.`;
+      if (boletasSaltadasPorExistente.size > 0) {
+        mensaje +=
+          '\n(Omitidas boletas ya registradas: ' +
+          Array.from(boletasSaltadasPorExistente).join(', ') +
+          ')';
+      }
+      if (boletasSaltadasPorDuplicado.size > 0) {
+        mensaje +=
+          '\n(Omitidas boletas duplicadas en el CSV: ' +
+          Array.from(boletasSaltadasPorDuplicado).join(', ') +
+          ')';
+      }
+
+      alert(mensaje);
       clearFile();
     } catch (e) {
       console.error(e);
@@ -277,25 +345,36 @@ export default function CargaGrupo() {
             </div>
 
             <div className="modal-body">
-              <table className="csv-table">
+            <table className="csv-table">
                 <thead>
-                  <tr>
+                <tr>
                     <th>Nombre</th>
                     <th>Boleta</th>
                     <th>Grupo</th>
-                  </tr>
+                </tr>
                 </thead>
                 <tbody>
-                  {rows.map((r, i) => (
+                {rows.map((r, i) => {
+                    const nombreCompleto = [
+                    r.nombre,
+                    r.apellidoPaterno,
+                    r.apellidoMaterno,
+                    ]
+                    .filter(Boolean)        // quita undefined / strings vacías
+                    .join(' ');
+
+                    return (
                     <tr key={i}>
-                      <td>{r.nombre}</td>
-                      <td>{r.boleta}</td>
-                      <td>{r.grupo}</td>
+                        <td>{nombreCompleto}</td>
+                        <td>{r.boleta}</td>
+                        <td>{r.grupo}</td>
                     </tr>
-                  ))}
+                    );
+                })}
                 </tbody>
-              </table>
+            </table>
             </div>
+
 
             <div className="modal-footer">
               <button
