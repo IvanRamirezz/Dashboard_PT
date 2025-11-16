@@ -1,0 +1,65 @@
+/* Style_Grupo.css (o donde tengas el modal) */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 999;   /* antes estaba algo como 50 */
+}
+
+
+.modal {
+  background: #ffffff;
+  border-radius: 12px;
+  padding: 1.5rem;
+  max-width: 800px;
+  width: 90vw;
+  max-height: 80vh;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 20px 40px rgba(15, 23, 42, 0.25);
+}
+
+.modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+}
+
+.modal-close {
+  border: none;
+  background: transparent;
+  font-size: 1.2rem;
+  cursor: pointer;
+}
+
+.modal-body {
+  overflow-y: auto;
+  margin-bottom: 1rem;
+}
+
+.csv-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.csv-table th,
+.csv-table td {
+  padding: 0.5rem 0.75rem;
+  border-bottom: 1px solid #e5e7eb;
+  text-align: left;
+}
+
+.upload-btn.danger {
+  background: #dc2626;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 0.6rem 1rem;
+  cursor: pointer;
+  font-weight: 600;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+}

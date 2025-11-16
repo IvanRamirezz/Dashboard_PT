@@ -172,11 +172,12 @@ export default function TablaCalificacionesPorPractica() {
 // mismos estilos que ya tenías (copiados de tu componente anterior)
 const styles = {
   contenedor: {
-    padding: '1rem',
+    padding: '0.5rem',
     fontFamily: 'Segoe UI, sans-serif',
   },
   titulo: {
-    marginBottom: '0.75rem',
+    marginTop: '-0.75rem',
+    marginBottom: '1.75rem',
     fontSize: '1.8rem',
     color: '#1f2937',
   },
