@@ -1,22 +1,23 @@
 ---
 import icono from "../../public/assets/icon.png";
-const currentPath = Astro.url.pathname.replace(/\/+$/, '') || '/';
-const base = import.meta.env.BASE_URL;
 
+// Ruta actual
+const currentPath = Astro.url.pathname.replace(/\/+$/, "") || "/";
+// Base de Astro (en dev suele ser "/", en prod puede ser "/Dashboard_PT/")
+const base = import.meta.env.BASE_URL; // ya viene con slash inicial y final
 
 const navItems = [
-  { href: '/Dashboard', icon: '/assets/inicio.png', label: 'Inicio' },
-  { href: '/Asignar', icon: '/assets/asignar.png', label: 'Asignar' },
-  { href: '/Alumnos', icon: '/assets/alumno.png', label: 'Alumnos' },
-  { href: '/Practicas', icon: '/assets/practicas.png', label: 'Practicas' },
-  { href: '/Cargar-grupo', icon: '/assets/cargando.png', label: 'Cargar grupo' },
+  { href: "/Dashboard", icon: "/assets/inicio.png", label: "Inicio" },
+  { href: "/Asignar", icon: "/assets/asignar.png", label: "Asignar" },
+  { href: "/Alumnos", icon: "/assets/alumno.png", label: "Alumnos" },
+  { href: "/Practicas", icon: "/assets/practicas.png", label: "Practicas" },
+  { href: "/Cargar-grupo", icon: "/assets/cargando.png", label: "Cargar grupo" },
 
-
-  // { href: '/', icon: '/assets/salida.png', label: 'Cerrar sesión', logout: true }
-  { href: '/Dashboard', icon: '/assets/salida.png', label: 'Cerrar sesión',logout: true}
+  // Logout (no usamos href, solo marca que es logout)
+  { href: "/Logout", icon: "/assets/salida.png", label: "Cerrar sesión", logout: true },
 ];
-
 ---
+
 <div class="sidebar">
   <div class="sidebar-title">
     <img src={icono.src} alt="icono" class="icon" />
@@ -25,13 +26,14 @@ const navItems = [
 
   <nav class="nav-section">
     {navItems
-      .filter(item => !item.logout)
+      .filter((item) => !item.logout)
       .map(({ href, icon, label }) => {
-        const fullHref = `/${base.replace(/^\/|\/$/g, '')}/${href.replace(/^\/|\/$/g, '')}`.replace(/\/+$/, '');
+        // construimos la ruta con base: "/base/ + ruta-sin-slash"
+        const fullHref = `${base}${href.replace(/^\/+/, "")}`.replace(/\/+$/, "");
         const isActive = currentPath === fullHref;
 
         return (
-          <a href={fullHref} class={`nav-item ${isActive ? 'active' : ''}`}>
+          <a href={fullHref} class={`nav-item ${isActive ? "active" : ""}`}>
             <img src={`${base}${icon}`} class="icon" />
             {label}
           </a>
@@ -42,39 +44,76 @@ const navItems = [
   {/* Sección de logout abajo */}
   <div class="logout-section">
     {navItems
-      .filter(item => item.logout)
-      .map(({ href, icon, label }) => (
-        <a href={href} class="nav-item logout">
-          <img src={`${base}${icon}`} class="icon" />
-          {label}
-        </a>
-      ))}
+      .filter((item) => item.logout)
+      .map(({ icon, label }) => {
+        // endpoint real de logout: /api/auth/signout (con base delante)
+        const signoutAction = `${base}api/auth/signout`;
+
+        return (
+          <form action={signoutAction} method="get">
+            <button type="submit" class="nav-item logout">
+              <img src={`${base}${icon}`} class="icon" />
+              {label}
+            </button>
+          </form>
+        );
+      })}
   </div>
 </div>
 
 <style>
   .sidebar {
-  display: flex;
-  flex-direction: column;
-  height: 100vh;
-}
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+  }
 
-.nav-section {
-  flex: 1;         /* Ocupa todo el espacio disponible */
-}
+  .sidebar-title {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 1rem;
+    font-weight: 700;
+  }
 
-.logout-section {
-  margin-top: auto;   /* Empuja el logout al fondo */
-  padding-bottom: 1rem;
-}
+  .nav-section {
+    flex: 1;
+  }
 
-.nav-item.logout {
-  color: #e11d48;
-}
+  .nav-item {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.75rem 1rem;
+    text-decoration: none;
+    color: #111827;
+  }
 
-.nav-item.logout:hover {
-  background-color: #fee2e2;
-}
+  .nav-item.active {
+    background-color: #e5e7eb;
+    font-weight: 600;
+  }
 
+  .logout-section {
+    margin-top: auto;
+    padding-bottom: 1rem;
+  }
+
+  .nav-item.logout {
+    width: 100%;
+    border: none;
+    background: transparent;
+    text-align: left;
+    cursor: pointer;
+    color: #e11d48;
+  }
+
+  .nav-item.logout:hover {
+    background-color: #fee2e2;
+  }
+
+  .icon {
+    width: 20px;
+    height: 20px;
+  }
 </style>
-

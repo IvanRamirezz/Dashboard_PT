@@ -5,7 +5,7 @@ import react from '@astrojs/react';
 
 export default defineConfig({
   site: 'https://ivanramirezz.github.io',
-  base: 'Dashboard_PT',
+  base: '/Dashboard_PT/',
   vite: {
     plugins: [tailwindcss()],
   },

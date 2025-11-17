@@ -2,10 +2,12 @@
 import DashboardLayout from '../layouts/DashboardLayout.astro';
 import '../styles/style.css';
 import AsignarPracticas from '../components/Alumnos/AsignarPracticas.jsx';
----
 
-<DashboardLayout pageTitle="Inicio">
+---
+  <DashboardLayout pageTitle="Inicio">
   <section class="content">
     <AsignarPracticas client:load />
   </section>
 </DashboardLayout>
+
+

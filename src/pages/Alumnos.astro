@@ -1,11 +1,11 @@
 ---
 import DashboardLayout from '../layouts/DashboardLayout.astro';
 import '../styles/style.css';
-import Alumno from '../components/Alumnos/Alumnos.jsx'; // Asegúrate que esta ruta sea correcta
+import Alumno from '../components/Alumnos/Alumnos.jsx';
 ---
 
-<DashboardLayout pageTitle="Alumnos"->
-  <section class="content">
-    <Alumno client:load />
-  </section>
-</DashboardLayout>
+  <DashboardLayout pageTitle="Alumnos">
+    <section class="content">
+      <Alumno client:load />
+    </section>
+  </DashboardLayout>

@@ -2,10 +2,15 @@
 import DashboardLayout from '../layouts/DashboardLayout.astro';
 import '../styles/style.css';
 import CargaGrupo from '../components/Alumnos/Cargar_Grupo';
+import AuthGuard from '../components/AuthGuard';
+
 ---
 
-<DashboardLayout pageTitle="CargarGrupo">
-  <section class="content">
-    <CargaGrupo client:load />
-  </section>
-</DashboardLayout>
+
+  <DashboardLayout pageTitle="CargarGrupo">
+    <section class="content">
+      <CargaGrupo client:load />
+    </section>
+  </DashboardLayout>
+
+

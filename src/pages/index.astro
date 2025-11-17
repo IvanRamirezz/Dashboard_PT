@@ -1,20 +1,31 @@
 ---
-import LoginForm from '../components/LoginForm.jsx';
-import '../styles/login.css';
+export const prerender = false;  // usamos cookies + redirect
+
+import Layout from "../layouts/Layout.astro";
+
+const { cookies, redirect } = Astro;
+
+// cookies que pusiste en /api/auth/signin
+const accessToken = cookies.get("sb-access-token");
+const refreshToken = cookies.get("sb-refresh-token");
+
+// Si YA está logueado, mandarlo al dashboard (NO a la misma página)
+if (accessToken && refreshToken) {
+  return redirect("/Dashboard_PT/Alumnos");
+}
 ---
 
-<html lang="es">
-  <head>
-    <meta charset="UTF-8" />
-    <title>Iniciar sesión</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  </head>
-  <body class="login-page">
-    <main class="login-container">
-      <div class="login-card">
-        <h1 class="login-title">Iniciar Sesión</h1>
-        <LoginForm client:load />
-      </div>
-    </main>
-  </body>
-</html>
+<Layout title="Sign in">
+  <h1>Sign in</h1>
+  <p>New here? <a href="/Dashboard_PT/register">Create an account</a></p>
+
+  <form action="/Dashboard_PT/api/auth/signin" method="post">
+    <label for="email">Email</label>
+    <input type="email" name="email" id="email" required />
+
+    <label for="password">Password</label>
+    <input type="password" name="password" id="password" required />
+
+    <button type="submit">Login</button>
+  </form>
+</Layout>
