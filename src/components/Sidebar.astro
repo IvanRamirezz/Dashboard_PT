@@ -1,10 +1,7 @@
 ---
 import icono from "../../public/assets/icon.png";
 
-// Ruta actual
 const currentPath = Astro.url.pathname.replace(/\/+$/, "") || "/";
-// Base de Astro (en dev suele ser "/", en prod puede ser "/Dashboard_PT/")
-const base = import.meta.env.BASE_URL; // ya viene con slash inicial y final
 
 const navItems = [
   { href: "/Dashboard", icon: "/assets/inicio.png", label: "Inicio" },
@@ -13,8 +10,7 @@ const navItems = [
   { href: "/Practicas", icon: "/assets/practicas.png", label: "Practicas" },
   { href: "/Cargar-grupo", icon: "/assets/cargando.png", label: "Cargar grupo" },
 
-  // Logout (no usamos href, solo marca que es logout)
-  { href: "/Logout", icon: "/assets/salida.png", label: "Cerrar sesión", logout: true },
+  { href: "/api/auth/signout", icon: "/assets/salida.png", label: "Cerrar sesión", logout: true },
 ];
 ---
 
@@ -28,31 +24,25 @@ const navItems = [
     {navItems
       .filter((item) => !item.logout)
       .map(({ href, icon, label }) => {
-        // construimos la ruta con base: "/base/ + ruta-sin-slash"
-        const fullHref = `${base}${href.replace(/^\/+/, "")}`.replace(/\/+$/, "");
-        const isActive = currentPath === fullHref;
+        const isActive = currentPath === href;
 
         return (
-          <a href={fullHref} class={`nav-item ${isActive ? "active" : ""}`}>
-            <img src={`${base}${icon}`} class="icon" />
+          <a href={href} class={`nav-item ${isActive ? "active" : ""}`}>
+            <img src={icon} class="icon" />
             {label}
           </a>
         );
       })}
   </nav>
 
-  {/* Sección de logout abajo */}
   <div class="logout-section">
     {navItems
       .filter((item) => item.logout)
-      .map(({ icon, label }) => {
-        // endpoint real de logout: /api/auth/signout (con base delante)
-        const signoutAction = `${base}api/auth/signout`;
-
+      .map(({ href, icon, label }) => {
         return (
-          <form action={signoutAction} method="get">
+          <form action={href} method="get">
             <button type="submit" class="nav-item logout">
-              <img src={`${base}${icon}`} class="icon" />
+              <img src={icon} class="icon" />
               {label}
             </button>
           </form>

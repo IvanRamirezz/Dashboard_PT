@@ -11,7 +11,7 @@ export default function LoginForm() {
     const { error } = await supabase.auth.signInWithPassword({ email, password })
 
     if (error) setError(error.message)
-    else window.location.href = '/Dashboard_PT/Dashboard'
+    else window.location.href = '/Dashboard'
   }
 
   return (

@@ -6,7 +6,7 @@ export default function AuthGuard({ children }) {
     const checkSession = async () => {
       const { data: { session } } = await supabase.auth.getSession()
       if (!session) {
-        window.location.href = '/Dashboard_PT'
+        window.location.href = '/'
       }
     }
 

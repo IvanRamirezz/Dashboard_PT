@@ -288,7 +288,7 @@ export default function CargaGrupo() {
         {/* Icono personalizado */}
         <div className="upload-icon">
           <img
-            src="/Dashboard_PT/assets/enviar.png"
+            src="/assets/enviar.png"
             alt="Subir"
             width="64"
             height="64"
