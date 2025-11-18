@@ -1,15 +1,13 @@
 import { defineConfig } from 'astro/config';
-import node from '@astrojs/node';
+import vercel from '@astrojs/vercel/server';    // 👈 ADAPTADOR CORRECTO PARA VERCEL
 import react from '@astrojs/react';
 import tailwindcss from "@tailwindcss/vite";
 
 export default defineConfig({
   base: '/',
 
-  output: 'server',
-  adapter: node({
-    mode: 'standalone',
-  }),
+  output: 'server',          // SSR necesario para Supabase
+  adapter: vercel(),         // 👈 YA NO USAR node()
 
   integrations: [react()],
   vite: {
