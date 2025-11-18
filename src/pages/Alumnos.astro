@@ -1,11 +1,26 @@
 ---
+export const prerender = false;
+
 import DashboardLayout from '../layouts/DashboardLayout.astro';
-import '../styles/style.css';
 import Alumno from '../components/Alumnos/Alumnos.jsx';
+import '../styles/style.css';
+
+import { requireAuth } from "../lib/authGuard";
+
+const authResult = await requireAuth(Astro);
+
+// ⬇️ SI requireAuth devolvió un Response (redirect),
+// lo regresamos y Astro YA NO sigue renderizando la página.
+if (authResult instanceof Response) {
+  return authResult;
+}
+
+// ⬇️ Si llegamos aquí, tenemos usuario válido
+const { user } = authResult;
 ---
 
-  <DashboardLayout pageTitle="Alumnos">
-    <section class="content">
-      <Alumno client:load />
-    </section>
-  </DashboardLayout>
+<DashboardLayout pageTitle="Alumnos">
+  <section class="content">
+    <Alumno client:load />
+  </section>
+</DashboardLayout>

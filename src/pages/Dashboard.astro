@@ -2,11 +2,21 @@
 import DashboardLayout from '../layouts/DashboardLayout.astro';
 import StatCard from '../components/Home/Statcard.astro';
 import ActionButton from '../components/Home/ActionButton.astro';
-import AuthGuard from '../components/AuthGuard';
 import Greeting from '../components/Home/Greeting';
 import cargargrupo from "../../public/assets/cargar.png";
 import asignar_practica from "../../public/assets/formacion.png";
 import '../styles/style.css';
+import { requireAuth } from "../lib/authGuard";
+
+const authResult = await requireAuth(Astro);
+
+// ⬇️ SI requireAuth devolvió un Response (redirect),
+// lo regresamos y Astro YA NO sigue renderizando la página.
+if (authResult instanceof Response) {
+  return authResult;
+}
+
+// ⬇️ Si llegamos aquí, tenemos usuario válido
 ---
 
 
