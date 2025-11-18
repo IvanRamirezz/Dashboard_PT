@@ -11,7 +11,7 @@ const refreshToken = cookies.get("sb-refresh-token");
 
 // Si YA está logueado, mandarlo al dashboard (NO a la misma página)
 if (accessToken && refreshToken) {
-  return redirect("/Dashboard_PT/Alumnos");
+  return redirect("/Dashboard_PT/Dashboard");
 }
 ---
 
