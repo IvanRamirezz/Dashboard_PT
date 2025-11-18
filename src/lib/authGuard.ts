@@ -11,7 +11,7 @@ export async function requireAuth(Astro: AstroGlobal) {
 
   // Si no hay cookies → devolvemos un redirect (Response)
   if (!accessToken || !refreshToken) {
-    return redirect(base);  // /Dashboard_PT/
+    return redirect(base);  
   }
 
   const { data, error } = await supabase.auth.setSession({

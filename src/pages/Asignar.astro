@@ -6,13 +6,9 @@ import { requireAuth } from "../lib/authGuard";
 
 const authResult = await requireAuth(Astro);
 
-// ⬇️ SI requireAuth devolvió un Response (redirect),
-// lo regresamos y Astro YA NO sigue renderizando la página.
 if (authResult instanceof Response) {
   return authResult;
 }
-
-// ⬇️ Si llegamos aquí, tenemos usuario válido
 ---
 
   <DashboardLayout pageTitle="Inicio">

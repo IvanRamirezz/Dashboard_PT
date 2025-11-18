@@ -1,12 +1,11 @@
 /* Estilos generales */
-body.login-page {
+
+body {
   margin: 0;
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  background: #f3f4f6;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 100vh;
+  padding: 0;
+  background: var(--bg);
+  font-family: system-ui, sans-serif;
+  color: var(--text);
 }
 
 /* Contenedor del login */
@@ -81,4 +80,13 @@ body.login-page {
   text-align: center;
   color: #dc2626;
   font-size: 0.9rem;
+}
+
+/* Wrapper para centrar el login */
+.login-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  background: #f3f4f6;
 }
