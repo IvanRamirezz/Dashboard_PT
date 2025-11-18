@@ -2,16 +2,24 @@ import { useEffect, useState } from 'react'
 import { supabase } from '../../lib/supabaseClient'
 
 export default function Greeting() {
-  const [name, setName] = useState('')
+  const [email, setEmail] = useState('')
 
   useEffect(() => {
     const fetchUser = async () => {
-      const { data: { user } } = await supabase.auth.getUser()
+      const {
+        data: { user },
+        error,
+      } = await supabase.auth.getUser()
+
+      if (error) {
+        console.error('Error al obtener usuario:', error)
+        return
+      }
 
       if (user) {
-        // Usa user_metadata si está definido
-        const fullName = user.user_metadata?.full_name || user.email
-        setName(fullName)
+        setEmail(user.email)  // 👈 aquí obtenemos el email del usuario autenticado
+      } else {
+        console.log('No hay usuario autenticado')
       }
     }
 
@@ -19,6 +27,6 @@ export default function Greeting() {
   }, [])
 
   return (
-    <h2>Bienvenido, Profesor {name}</h2>
+    <h2>Bienvenido, Profesor {email}</h2>
   )
 }
