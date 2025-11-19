@@ -2,37 +2,65 @@
 import DashboardLayout from '../layouts/DashboardLayout.astro';
 import StatCard from '../components/Home/Statcard.astro';
 import ActionButton from '../components/Home/ActionButton.astro';
-import Greeting from '../components/Home/Greeting';
 import cargargrupo from "../../public/assets/cargar.png";
 import asignar_practica from "../../public/assets/formacion.png";
 import '../styles/style.css';
-import { requireAuth } from "../lib/authGuard";
 
+import { requireAuth } from "../lib/authGuard";
+import { supabase } from "../lib/supabase";
+
+// 🔐 Protegemos la ruta
 const authResult = await requireAuth(Astro);
 
-// ⬇️ SI requireAuth devolvió un Response (redirect),
-// lo regresamos y Astro YA NO sigue renderizando la página.
+// Si requireAuth devolvió un Response (redirect), lo regresamos
 if (authResult instanceof Response) {
   return authResult;
 }
 
+// 👍 requireAuth devuelve: { user: User | null }
+const user = authResult.user;
+
+// UID de Supabase Auth
+const authUid = user?.id;
+
+// ⚠️ Fallback por si no existe nombre
+let nombreCompleto = user?.email || "Usuario";
+
+// 🧑‍🏫 Traer nombre del usuario desde tu tabla Usuarios
+if (authUid) {
+  const { data: usuario, error: usuarioError } = await supabase
+    .from("Usuarios")
+    .select("Nombre, Apellido_Paterno")
+    .eq("auth_uid", authUid)
+    .maybeSingle();
+
+  if (usuarioError) {
+    console.error("Error consultando usuario:", usuarioError);
+  }
+
+  if (usuario) {
+    nombreCompleto = `${usuario.Nombre} ${usuario.Apellido_Paterno}`;
+  }
+}
 ---
 
-  <DashboardLayout>
-    <section class="content">
-      <Greeting client:load />
+<DashboardLayout pageTitle="Dashboard">
+  <section class="content">
 
-      <div class="stats">
-        <StatCard label="Grupos registrados" value="3" />
-        <StatCard label="Prácticas activas" value="5" />
-        <StatCard label="Alumnos activos" value="120" />
-      </div>
+    <!-- 👇 Aquí se muestra el nombre -->
+    <h1 class="text-2xl font-semibold mb-4">
+      Bienvenido, {nombreCompleto}
+    </h1>
 
-      <div class="actions">
-        <ActionButton href="#" icon={cargargrupo.src} label="Cargar grupo (Excel)" />
-        <ActionButton href="#" icon={asignar_practica.src} label="Asignar práctica" />
-      </div>
-    </section>
+    <div class="stats">
+      <StatCard label="Grupos registrados" value="3" />
+      <StatCard label="Prácticas activas" value="5" />
+      <StatCard label="Alumnos activos" value="120" />
+    </div>
+
+    <div class="actions">
+      <ActionButton href="#" icon={cargargrupo.src} label="Cargar grupo (Excel)" />
+      <ActionButton href="#" icon={asignar_practica.src} label="Asignar práctica" />
+    </div>
+  </section>
 </DashboardLayout>
-
-
