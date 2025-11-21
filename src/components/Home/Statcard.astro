@@ -1,6 +1,42 @@
 ---
-const { label, value } = Astro.props;
+import { supabase } from "../../lib/supabase";
+
+const { type, label } = Astro.props;
+
+// Valor por defecto
+let value = 0;
+
+// Función para obtener valor según tipo
+switch (type) {
+  case "grupos":
+    const { count: gruposCount } = await supabase
+      .from("Grupos")
+      .select("*", { count: "exact", head: true });
+    value = gruposCount ?? 0;
+    break;
+
+  case "practicas":
+    const { count: practicasCount } = await supabase
+      .from("Practicas")
+      .select("*", { count: "exact", head: true });
+    value = practicasCount ?? 0;
+    break;
+
+  case "alumnos":
+    const ALUMNO_ROLE_ID = 1; // Es de acuerdo a la tabla de roles en este caso 1 para alumnos
+    const { count: alumnosCount } = await supabase
+      .from("Usuarios")
+      .select("*", { count: "exact", head: true })
+      .eq("Rol_id", ALUMNO_ROLE_ID);
+    value = alumnosCount ?? 0;
+    break;
+
+  default:
+    console.warn(`StatCard: Tipo desconocido "${type}"`);
+    break;
+}
 ---
+
 <div class="card">
   <span>{label}</span>
   <strong>{value}</strong>

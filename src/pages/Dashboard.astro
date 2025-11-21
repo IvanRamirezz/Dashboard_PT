@@ -53,13 +53,13 @@ if (authUid) {
     </h1>
 
     <div class="stats">
-      <StatCard label="Grupos registrados" value="3" />
-      <StatCard label="Prácticas activas" value="5" />
-      <StatCard label="Alumnos activos" value="120" />
+      <StatCard type="grupos" label="Grupos registrados" />
+      <StatCard type="practicas" label="Prácticas activas" />
+      <StatCard type="alumnos" label="Alumnos inscritos" />
     </div>
 
     <div class="actions">
-      <ActionButton href="#" icon={cargargrupo.src} label="Cargar grupo (Excel)" />
+      <ActionButton href="#" icon={cargargrupo.src} label="Descargar Excel (Alta)" />
       <ActionButton href="#" icon={asignar_practica.src} label="Asignar práctica" />
     </div>
   </section>
