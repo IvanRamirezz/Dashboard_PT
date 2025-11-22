@@ -1,7 +1,6 @@
 ---
 import DashboardLayout from '../layouts/DashboardLayout.astro';
 import StatCard from '../components/Home/Statcard.astro';
-import ActionButton from '../components/Home/ActionButton.astro';
 import cargargrupo from "../../public/assets/cargar.png";
 import asignar_practica from "../../public/assets/formacion.png";
 import '../styles/style.css';
@@ -42,6 +41,14 @@ if (authUid) {
     nombreCompleto = `${usuario.Nombre} ${usuario.Apellido_Paterno}`;
   }
 }
+
+// Obtener URL pública del Excel
+const { data: excelData } = supabase
+  .storage
+  .from("Excel-CargarGrupo")              // bucket
+  .getPublicUrl("Archivos/Grupo_Alta.xlsx");  // ruta exacta
+
+const excelUrl = excelData.publicUrl;
 ---
 
 <DashboardLayout pageTitle="Dashboard">
@@ -59,8 +66,26 @@ if (authUid) {
     </div>
 
     <div class="actions">
-      <ActionButton href="#" icon={cargargrupo.src} label="Descargar Excel (Alta)" />
-      <ActionButton href="#" icon={asignar_practica.src} label="Asignar práctica" />
+
+      <!-- Botón para descargar Excel -->
+      <a href={excelUrl} class="action">
+        <div>
+          <img src={cargargrupo.src} class="icon" alt="" />
+          Descargar Excel (Alta)
+        </div>
+        <span>→</span>
+      </a>
+
+      <!-- Botón para ir a asignar.astro -->
+      <a href="/Asignar" class="action">
+        <div>
+          <img src={asignar_practica.src} class="icon" alt="" />
+          Asignar práctica
+        </div>
+        <span>→</span>
+      </a>
+
     </div>
+
   </section>
 </DashboardLayout>
