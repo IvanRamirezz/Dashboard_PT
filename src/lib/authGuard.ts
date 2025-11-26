@@ -1,30 +1,52 @@
-// src/lib/authGuard.ts
-import type { AstroGlobal } from "astro";
-import { supabase } from "./supabase";
+import type { APIContext } from "astro";
+import { supabase } from "../lib/supabase";
 
-export async function requireAuth(Astro: AstroGlobal) {
-  const { cookies, redirect } = Astro;
-  const base = import.meta.env.BASE_URL; // p.ej. "/Dashboard_PT/"
+const ROL_PROFESOR = 2; // Ajusta si tu ID del profesor es diferente
 
-  const accessToken = cookies.get("sb-access-token");
-  const refreshToken = cookies.get("sb-refresh-token");
+// 🔐 Verifica sesión
+export async function requireAuth(Astro: APIContext) {
+  const access = Astro.cookies.get("sb-access-token");
+  const refresh = Astro.cookies.get("sb-refresh-token");
 
-  // Si no hay cookies → devolvemos un redirect (Response)
-  if (!accessToken || !refreshToken) {
-    return redirect(base);  
+  if (!access || !refresh) {
+    return Astro.redirect("/signin");
   }
 
   const { data, error } = await supabase.auth.setSession({
-    refresh_token: refreshToken.value,
-    access_token: accessToken.value,
+    access_token: access.value,
+    refresh_token: refresh.value,
   });
 
   if (error || !data.session) {
-    cookies.delete("sb-access-token", { path: "/" });
-    cookies.delete("sb-refresh-token", { path: "/" });
-    return redirect(base);
+    Astro.cookies.delete("sb-access-token", { path: "/" });
+    Astro.cookies.delete("sb-refresh-token", { path: "/" });
+    return Astro.redirect("/signin");
   }
 
-  // Si todo bien, devolvemos el usuario
-  return { user: data.user };
+  return { user: data.session.user };
+}
+
+// 🔐 SOLO PROFESORES PUEDEN ENTRAR
+export async function requireProfessor(Astro: APIContext) {
+  const session = await requireAuth(Astro);
+
+  if (session instanceof Response) return session;
+
+  const user = session.user;
+
+  const { data, error } = await supabase
+    .from("Usuarios")
+    .select("Rol_id")
+    .eq("auth_uid", user.id)
+    .maybeSingle();
+
+  if (error || !data) {
+    return Astro.redirect("/signin");
+  }
+
+  if (data.Rol_id !== ROL_PROFESOR) {
+    return Astro.redirect("/no-autorizado"); // puedes crear esta página
+  }
+
+  return { user };
 }

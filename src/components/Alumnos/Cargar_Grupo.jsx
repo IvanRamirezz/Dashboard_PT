@@ -1,12 +1,11 @@
 import { useRef, useState } from 'react';
-import { supabase } from '../../lib/supabaseClient';
 import '../../styles/Style_Grupo.css';
 
 export default function CargaGrupo() {
   const [file, setFile] = useState(null);
   const [dragOver, setDragOver] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [rows, setRows] = useState([]);        // filas del CSV
+  const [rows, setRows] = useState([]);        // filas del CSV (con email incluido)
   const [showPreview, setShowPreview] = useState(false); // control del modal
   const inputRef = useRef(null);
 
@@ -45,26 +44,35 @@ export default function CargaGrupo() {
         .split(',')
         .map((h) => h.trim().toLowerCase());
 
-        const idxNombre = headers.findIndex((h) => h === 'nombre');
-        const idxApeMat = headers.findIndex((h) => h === 'apellido_materno');
-        const idxApePat = headers.findIndex((h) => h === 'apellido_paterno');
-        const idxBoleta = headers.findIndex((h) => h === 'boleta');
-        const idxGrupo  = headers.findIndex((h) => h === 'grupo');
+      const idxNombre   = headers.findIndex((h) => h === 'nombre');
+      const idxApeMat   = headers.findIndex((h) => h === 'apellido_materno');
+      const idxApePat   = headers.findIndex((h) => h === 'apellido_paterno');
+      const idxBoleta   = headers.findIndex((h) => h === 'boleta');
+      const idxGrupo    = headers.findIndex((h) => h === 'grupo');
+      const idxEmail    = headers.findIndex((h) => h === 'email' || h === 'correo');
 
       const parsed = lines
         .slice(1)
         .map((line) => {
           const cols = line.split(',');
 
+          const nombre          = idxNombre >= 0 ? (cols[idxNombre]?.trim() || '') : '';
+          const apellidoMaterno = idxApeMat >= 0 ? (cols[idxApeMat]?.trim() || '') : '';
+          const apellidoPaterno = idxApePat >= 0 ? (cols[idxApePat]?.trim() || '') : '';
+          const boleta          = idxBoleta >= 0 ? (cols[idxBoleta]?.trim() || '') : '';
+          const grupo           = idxGrupo  >= 0 ? (cols[idxGrupo]?.trim()  || '') : '';
+          const email           = idxEmail  >= 0 ? (cols[idxEmail]?.trim()  || '') : '';
+
           return {
-            nombre:           cols[idxNombre]?.trim()   || '',
-            apellidoMaterno:  cols[idxApeMat]?.trim()   || '',
-            apellidoPaterno:  cols[idxApePat]?.trim()   || '',
-            boleta:           cols[idxBoleta]?.trim()   || '',
-            grupo:            cols[idxGrupo]?.trim()    || '',
+            nombre,
+            apellidoMaterno,
+            apellidoPaterno,
+            boleta,
+            grupo,
+            email,
           };
         })
-        .filter((r) => r.nombre || r.boleta || r.grupo);
+        .filter((r) => r.nombre || r.boleta || r.grupo || r.email);
 
       setRows(parsed);
       setShowPreview(parsed.length > 0); // abrir modal si hay filas
@@ -99,174 +107,46 @@ export default function CargaGrupo() {
     if (f) handleFile(f);
   };
 
-  // --- ENVIAR CSV A SUPABASE: CREA GRUPOS NUEVOS + ALUMNOS (SIN BOLETAS REPETIDAS) ---
+  // --- ENVIAR FILAS AL BACKEND ---
   const handleUpload = async () => {
-    if (!file) return alert('Selecciona un archivo primero.');
+    if (!file) {
+      alert('Selecciona un archivo primero.');
+      return;
+    }
     if (rows.length === 0) {
-      return alert('El archivo no tiene filas válidas (Nombre, Boleta, Grupo).');
+      alert('El archivo no tiene filas válidas.');
+      return;
     }
 
     setLoading(true);
     try {
-      // 1) Obtener nombres de grupo únicos del CSV
-      const nombresGruposCSV = Array.from(
-        new Set(
-          rows
-            .map((r) => r.grupo?.trim())
-            .filter((g) => g && g.length > 0)
-        )
-      );
-
-      if (nombresGruposCSV.length === 0) {
-        alert('No se encontraron grupos en el CSV.');
-        setLoading(false);
-        return;
-      }
-
-      // 2) Traer grupos existentes con esos nombres
-      const { data: gruposExistentes, error: gruposError } = await supabase
-        .from('Grupos')
-        .select('id, Nombre')
-        .in('Nombre', nombresGruposCSV);
-
-      if (gruposError) throw gruposError;
-
-      const mapaGrupos = new Map();
-      (gruposExistentes ?? []).forEach((g) => {
-        mapaGrupos.set(g.Nombre.trim().toLowerCase(), g.id);
+      const res = await fetch('/api/auth/invite', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ rows }),
       });
 
-      // 3) Detectar qué grupos del CSV NO existen aún
-      const gruposFaltantes = nombresGruposCSV.filter(
-        (nombre) => !mapaGrupos.has(nombre.trim().toLowerCase())
-      );
-
-      // 4) Insertar grupos faltantes
-      if (gruposFaltantes.length > 0) {
-        const nuevosGruposPayload = gruposFaltantes.map((nombre) => ({
-          Nombre: nombre,
-          Profesor_id: null,
-        }));
-
-        const { data: gruposInsertados, error: insertGruposError } = await supabase
-          .from('Grupos')
-          .insert(nuevosGruposPayload)
-          .select('id, Nombre');
-
-        if (insertGruposError) throw insertGruposError;
-
-        (gruposInsertados ?? []).forEach((g) => {
-          mapaGrupos.set(g.Nombre.trim().toLowerCase(), g.id);
-        });
+      // leemos texto crudo por si el servidor no responde JSON perfecto
+      const rawText = await res.text();
+      let data = {};
+      try {
+        data = rawText ? JSON.parse(rawText) : {};
+      } catch {
+        console.error('Respuesta no JSON del servidor:', rawText);
       }
 
-      // 5) Obtener boletas del CSV (únicas)
-      const boletasCSV = Array.from(
-        new Set(
-          rows
-            .map((r) => r.boleta?.trim())
-            .filter((b) => b && b.length > 0)
-        )
-      );
-
-      // 6) Traer boletas ya existentes en Usuarios
-      const { data: alumnosExistentes, error: alumnosExistentesError } = await supabase
-        .from('Usuarios')
-        .select('Boleta')
-        .in('Boleta', boletasCSV);
-
-      if (alumnosExistentesError) throw alumnosExistentesError;
-
-      const boletasYaRegistradas = new Set(
-        (alumnosExistentes ?? [])
-          .map((a) => a.Boleta?.trim())
-          .filter(Boolean)
-      );
-
-      // 7) Construir arreglo de alumnos a insertar en Usuarios,
-      //    saltando boletas que ya existen o duplicadas en el propio CSV
-      const alumnosAInsertar = [];
-      const boletasUsadasEnCSV = new Set();
-      const boletasSaltadasPorDuplicado = new Set();
-      const boletasSaltadasPorExistente = new Set();
-
-      for (const r of rows) {
-        if (!r.nombre || !r.boleta || !r.grupo) continue;
-
-        const boleta = r.boleta.trim();
-        const keyGrupo = r.grupo.trim().toLowerCase();
-        const grupoId = mapaGrupos.get(keyGrupo);
-
-        if (!grupoId) continue;
-
-        // Duplicado dentro del propio CSV
-        if (boletasUsadasEnCSV.has(boleta)) {
-          boletasSaltadasPorDuplicado.add(boleta);
-          continue;
-        }
-
-        // Ya existe en la base
-        if (boletasYaRegistradas.has(boleta)) {
-          boletasSaltadasPorExistente.add(boleta);
-          continue;
-        }
-
-        boletasUsadasEnCSV.add(boleta);
-
-        alumnosAInsertar.push({
-          Nombre: r.nombre,
-          Apellido_Paterno: r.apellidoPaterno || null,
-          Apellido_Materno: r.apellidoMaterno || null,
-          Boleta: boleta,
-          Grupo_id: grupoId,
-          // Contrasena_Hash: null,
-          // Rol_id: null,
-        });
+      if (!res.ok) {
+        console.error('Status:', res.status, 'Body:', data || rawText);
+        throw new Error(
+          (data && data.error) || `Error al procesar el archivo (status ${res.status})`
+        );
       }
 
-      if (alumnosAInsertar.length === 0) {
-        let msg = 'No se pudo generar ningún alumno para insertar.';
-        if (boletasSaltadasPorExistente.size > 0) {
-          msg +=
-            '\nBoletas ya registradas que se omitieron: ' +
-            Array.from(boletasSaltadasPorExistente).join(', ');
-        }
-        if (boletasSaltadasPorDuplicado.size > 0) {
-          msg +=
-            '\nBoletas duplicadas dentro del CSV que se omitieron: ' +
-            Array.from(boletasSaltadasPorDuplicado).join(', ');
-        }
-        alert(msg);
-        setLoading(false);
-        return;
-      }
-
-      // 8) Insertar alumnos en Usuarios
-      const { error: insertAlumnosError } = await supabase
-        .from('Usuarios')
-        .insert(alumnosAInsertar);
-
-      if (insertAlumnosError) throw insertAlumnosError;
-
-      let mensaje = `✅ Se insertaron ${alumnosAInsertar.length} alumnos nuevos.`;
-      if (boletasSaltadasPorExistente.size > 0) {
-        mensaje +=
-          '\n(Omitidas boletas ya registradas: ' +
-          Array.from(boletasSaltadasPorExistente).join(', ') +
-          ')';
-      }
-      if (boletasSaltadasPorDuplicado.size > 0) {
-        mensaje +=
-          '\n(Omitidas boletas duplicadas en el CSV: ' +
-          Array.from(boletasSaltadasPorDuplicado).join(', ') +
-          ')';
-      }
-
-      alert(mensaje);
+      alert(data.message || 'Alumnos cargados correctamente.');
       clearFile();
     } catch (e) {
       console.error(e);
-      alert(`❌ Error al guardar en Supabase: ${e.message ?? e}`);
+      alert(`❌ Error al guardar en el servidor: ${e.message ?? e}`);
     } finally {
       setLoading(false);
     }
@@ -276,7 +156,10 @@ export default function CargaGrupo() {
     <section className="upload-container">
       <header className="upload-header">
         <h1>Carga del grupo</h1>
-        <p>Sube un archivo CSV con datos de los alumnos para registrar los alumnos.</p>
+        <p>
+          Sube un archivo CSV con datos de los alumnos
+          (nombre, apellidos, boleta, grupo y correo) para registrarlos.
+        </p>
       </header>
 
       <div
@@ -345,36 +228,37 @@ export default function CargaGrupo() {
             </div>
 
             <div className="modal-body">
-            <table className="csv-table">
+              <table className="csv-table">
                 <thead>
-                <tr>
+                  <tr>
                     <th>Nombre</th>
                     <th>Boleta</th>
                     <th>Grupo</th>
-                </tr>
+                    <th>Correo</th>
+                  </tr>
                 </thead>
                 <tbody>
-                {rows.map((r, i) => {
+                  {rows.map((r, i) => {
                     const nombreCompleto = [
-                    r.nombre,
-                    r.apellidoPaterno,
-                    r.apellidoMaterno,
+                      r.nombre,
+                      r.apellidoPaterno,
+                      r.apellidoMaterno,
                     ]
-                    .filter(Boolean)        // quita undefined / strings vacías
-                    .join(' ');
+                      .filter(Boolean)
+                      .join(' ');
 
                     return (
-                    <tr key={i}>
+                      <tr key={i}>
                         <td>{nombreCompleto}</td>
                         <td>{r.boleta}</td>
                         <td>{r.grupo}</td>
-                    </tr>
+                        <td>{r.email}</td>
+                      </tr>
                     );
-                })}
+                  })}
                 </tbody>
-            </table>
+              </table>
             </div>
-
 
             <div className="modal-footer">
               <button

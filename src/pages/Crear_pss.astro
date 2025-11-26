@@ -1,0 +1,51 @@
+---
+import { supabase } from "../lib/supabase";
+
+const token = Astro.url.searchParams.get("token");
+const type = Astro.url.searchParams.get("type");
+
+// Si no hay token → error
+if (!token) {
+  throw new Error("Token no válido.");
+}
+
+let errorMsg = "";
+let successMsg = "";
+
+if (Astro.request.method === "POST") {
+  const form = await Astro.request.formData();
+  const password = form.get("password")?.toString();
+
+  const { error } = await supabase.auth.updateUser({
+    password,
+  });
+
+  if (error) {
+    errorMsg = error.message;
+  } else {
+    successMsg = "Tu contraseña fue creada con éxito. Ya puedes iniciar sesión.";
+  }
+}
+---
+
+<html>
+  <body>
+    <h1>Crear contraseña</h1>
+
+    {errorMsg && <p style="color:red">{errorMsg}</p>}
+    {successMsg && <p style="color:green">{successMsg}</p>}
+
+    <form method="POST">
+      <input type="hidden" name="token" value={token} />
+
+      <label>Nueva contraseña</label>
+      <input type="password" name="password" required />
+
+      <button type="submit">Guardar contraseña</button>
+    </form>
+
+    {successMsg && (
+      <a href="/signin">Iniciar sesión</a>
+    )}
+  </body>
+</html>
