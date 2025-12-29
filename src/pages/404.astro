@@ -1,0 +1,153 @@
+---
+import Layout from "../layouts/Layout.astro";
+
+export const prerender = true; // 404 puede ser estática
+---
+
+<Layout title="404 | Página no encontrada">
+  <main class="wrap">
+    <section class="card">
+      <div class="badge" aria-hidden="true">404</div>
+
+      <h1>Página no encontrada</h1>
+      <p class="sub">
+        La ruta que estás buscando no existe o fue movida. Puedes volver al inicio o regresar a la página anterior.
+      </p>
+
+      <div class="actions">
+        <a class="btn primary" href="/">Ir al inicio</a>
+        <button class="btn ghost" type="button" id="goBack">Volver</button>
+      </div>
+
+      <div class="help">
+        <p class="hint">Sugerencias rápidas:</p>
+        <ul>
+          <li>Revisa que la URL esté bien escrita.</li>
+          <li>Si seguiste un enlace dentro de la app, intenta volver al inicio.</li>
+        </ul>
+      </div>
+    </section>
+  </main>
+
+  <script is:inline>
+    const btn = document.getElementById("goBack");
+    if (btn) btn.addEventListener("click", () => history.back());
+  </script>
+</Layout>
+
+<style>
+  .wrap{
+    min-height: calc(100vh - 120px);
+    display: grid;
+    place-items: center;
+    padding: 48px 16px;
+    background: #f6f8fc;
+  }
+
+  .card{
+    width: min(820px, 100%);
+    background: #fff;
+    border: 1px solid rgba(15, 23, 42, 0.10);
+    border-radius: 18px;
+    padding: 30px;
+    box-shadow: 0 14px 38px rgba(2, 6, 23, 0.10);
+    text-align: center;
+  }
+
+  .badge{
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 8px 12px;
+    border-radius: 999px;
+    font-weight: 900;
+    letter-spacing: 0.06em;
+    color: #1d4ed8;
+    background: rgba(37, 99, 235, 0.10);
+    border: 1px solid rgba(37, 99, 235, 0.22);
+    margin-bottom: 14px;
+  }
+
+  h1{
+    margin: 0;
+    font-size: 2.1rem;
+    letter-spacing: -0.02em;
+    color: #0f172a;
+  }
+
+  .sub{
+    margin: 10px auto 0;
+    max-width: 56ch;
+    color: #64748b;
+    font-size: 1.02rem;
+    line-height: 1.5;
+  }
+
+  .actions{
+    margin-top: 18px;
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+
+  .btn{
+    border-radius: 12px;
+    padding: 12px 14px;
+    font-weight: 900;
+    font-size: 1rem;
+    cursor: pointer;
+    border: 1px solid rgba(15, 23, 42, 0.12);
+    background: #fff;
+    color: #0f172a;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 150px;
+    transition: transform 0.08s ease, filter 0.15s ease, box-shadow 0.15s ease;
+  }
+
+  .btn:active{ transform: translateY(1px); }
+
+  .btn.primary{
+    border: 1px solid rgba(37, 99, 235, 0.35);
+    background: linear-gradient(180deg, #2563eb, #1d4ed8);
+    color: #fff;
+    box-shadow: 0 12px 22px rgba(37, 99, 235, 0.18);
+  }
+
+  .btn.primary:hover{ filter: brightness(1.03); }
+
+  .btn.ghost{
+    background: rgba(15, 23, 42, 0.03);
+  }
+
+  .help{
+    margin-top: 18px;
+    text-align: left;
+    background: #f8fafc;
+    border: 1px solid rgba(15, 23, 42, 0.08);
+    border-radius: 14px;
+    padding: 14px 16px;
+  }
+
+  .hint{
+    margin: 0 0 8px;
+    font-weight: 800;
+    color: #0f172a;
+  }
+
+  ul{
+    margin: 0;
+    padding-left: 18px;
+    color: #475569;
+    line-height: 1.55;
+  }
+
+  @media (max-width: 520px){
+    .card{ padding: 22px; }
+    h1{ font-size: 1.8rem; }
+    .btn{ width: 100%; }
+  }
+</style>

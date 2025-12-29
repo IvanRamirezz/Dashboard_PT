@@ -1,5 +1,5 @@
 ---
-export const prerender = false;  // SSR
+export const prerender = false; // SSR
 import "../styles/login.css";
 import favicon from "../../public/favicon.png";
 
@@ -13,36 +13,77 @@ if (accessToken && refreshToken) {
 }
 ---
 
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-    <title>Login - Dashboard</title>
+  <title>Login - Dashboard</title>
+  <link rel="icon" type="image/png" href={favicon.src} />
+</head>
 
-      <link rel="icon" type="image/png" href={favicon.src}  />
-  </head>
+<body>
+  <div class="login-wrapper">
+    <div class="login-container">
+      <div class="login-card">
+        <h1 class="login-title">Sign in</h1>
 
-  <body>
-    <div class="login-wrapper">
-      <div class="login-container">
-        <div class="login-card">
-          <h1 class="login-title">Sign in</h1>
+        <p class="login-subtitle">
+          Ingresa con tus credenciales para acceder a la plataforma.
+        </p>
 
-          <form class="login-form" action="/api/auth/signin" method="post">
-            <label>
-              Email
-              <input type="email" name="email" required />
-            </label>
+        <form class="login-form" action="/api/auth/signin" method="post">
+          <label>
+            Email
+            <input type="email" name="email" required />
+          </label>
 
-            <label>
-              Password
-              <input type="password" name="password" required />
-            </label>
+          <label>
+            Password
+            <input type="password" name="password" required />
+          </label>
 
-            <button type="submit">Login</button>
-          </form>
-        </div>
+          <button type="submit">Login</button>
+        </form>
+
+        <!-- ✅ Registro -->
+        <div class="login-divider" role="separator" aria-label="Separador"></div>
+
+        <p class="login-register">
+          ¿No tienes credenciales?
+          <a href="/Registro-Profe">Crea una cuenta</a>
+        </p>
       </div>
     </div>
-  </body>
+  </div>
+</body>
 
+<style>
+  /* Si ya lo manejas en login.css, puedes borrar este bloque */
+  .login-subtitle {
+    margin: 8px 0 18px;
+    color: #64748b;
+    font-size: 0.98rem;
+    text-align: center;
+  }
+
+  .login-divider {
+    height: 1px;
+    background: rgba(15, 23, 42, 0.12);
+    margin: 18px 0 12px;
+  }
+
+  .login-register {
+    margin: 0;
+    text-align: center;
+    color: #64748b;
+    font-size: 0.98rem;
+  }
+
+  .login-register a {
+    color: #2563eb;
+    font-weight: 700;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+    margin-left: 6px;
+  }
+</style>
