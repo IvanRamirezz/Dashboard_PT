@@ -1,352 +1,392 @@
 ---
+import Layout from "../layouts/Layout.astro";
+import { createClient } from "@supabase/supabase-js";
+
 export const prerender = false;
+
+// Cliente Supabase (server-side)
+const supabase = createClient(
+  import.meta.env.SUPABASE_URL,
+  import.meta.env.SUPABASE_ANON_KEY
+);
+
+// Traer grupos desde Supabase (igual que tu ejemplo)
+const { data: grupos, error: gruposError } = await supabase
+  .from("Grupos")
+  .select("id, Nombre")
+  .order("Nombre", { ascending: true });
 ---
 
-<main class="registro-page">
-  <section class="registro-card">
-    <h1>Registro de alumno</h1>
-    <p class="subtitle">Crea tu cuenta para acceder a las prácticas.</p>
+<Layout title="Register">
+  <section class="auth">
+    <div class="card">
+      <header class="head">
+        <h1>Registro</h1>
+        <p class="sub">
+          ¿Ya tienes una cuenta?
+          <a href="/signin">Inicia sesión</a>
+        </p>
+      </header>
 
-    <form id="registro-form" class="registro-form">
-      <div class="form-row">
-        <label>
-          Nombre(s) *
-          <input type="text" name="nombre" required />
-        </label>
-      </div>
+      <div class="divider"></div>
 
-      <div class="form-row">
-        <label>
-          Apellido paterno *
-          <input type="text" name="apellidoPaterno" required />
-        </label>
-      </div>
+      <form action="/api/auth/register" method="post" class="register-form">
+        <div class="grid">
+          <!-- Nombre(s) -->
+          <div class="control">
+            <div class="control-head">
+              <span class="ico" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none">
+                  <path d="M12 12a4.5 4.5 0 1 0-4.5-4.5A4.5 4.5 0 0 0 12 12Z" stroke="currentColor" stroke-width="2"/>
+                  <path d="M4 20c1.8-3.5 5-5 8-5s6.2 1.5 8 5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                </svg>
+              </span>
+              <label for="nombre">Nombre(s) <span class="req">*</span></label>
+            </div>
+            <div class="control-body">
+              <span class="ico soft" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none">
+                  <path d="M12 12a4.5 4.5 0 1 0-4.5-4.5A4.5 4.5 0 0 0 12 12Z" stroke="currentColor" stroke-width="2"/>
+                  <path d="M4 20c1.8-3.5 5-5 8-5s6.2 1.5 8 5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                </svg>
+              </span>
+              <input type="text" name="nombre" id="nombre" required placeholder="Ingresa tu nombre" />
+            </div>
+          </div>
 
-      <div class="form-row">
-        <label>
-          Apellido materno
-          <input type="text" name="apellidoMaterno" />
-        </label>
-      </div>
+          <!-- Apellido paterno -->
+          <div class="control">
+            <div class="control-head">
+              <span class="ico" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none">
+                  <path d="M12 12a4.5 4.5 0 1 0-4.5-4.5A4.5 4.5 0 0 0 12 12Z" stroke="currentColor" stroke-width="2"/>
+                  <path d="M4 20c1.8-3.5 5-5 8-5s6.2 1.5 8 5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                </svg>
+              </span>
+              <label for="apellidoPaterno">Apellido paterno <span class="req">*</span></label>
+            </div>
+            <div class="control-body">
+              <span class="ico soft" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none">
+                  <path d="M12 12a4.5 4.5 0 1 0-4.5-4.5A4.5 4.5 0 0 0 12 12Z" stroke="currentColor" stroke-width="2"/>
+                  <path d="M4 20c1.8-3.5 5-5 8-5s6.2 1.5 8 5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                </svg>
+              </span>
+              <input type="text" name="apellidoPaterno" id="apellidoPaterno" required placeholder="Ingresa tu apellido" />
+            </div>
+          </div>
 
-      <div class="form-row">
-        <label>
-          Boleta *
-          <input type="text" name="boleta" required />
-        </label>
-      </div>
+          <!-- Apellido materno -->
+          <div class="control">
+            <div class="control-head">
+              <span class="ico" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none">
+                  <path d="M12 12a4.5 4.5 0 1 0-4.5-4.5A4.5 4.5 0 0 0 12 12Z" stroke="currentColor" stroke-width="2"/>
+                  <path d="M4 20c1.8-3.5 5-5 8-5s6.2 1.5 8 5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                </svg>
+              </span>
+              <label for="apellidoMaterno">Apellido materno</label>
+            </div>
+            <div class="control-body">
+              <span class="ico soft" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none">
+                  <path d="M12 12a4.5 4.5 0 1 0-4.5-4.5A4.5 4.5 0 0 0 12 12Z" stroke="currentColor" stroke-width="2"/>
+                  <path d="M4 20c1.8-3.5 5-5 8-5s6.2 1.5 8 5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                </svg>
+              </span>
+              <input type="text" name="apellidoMaterno" id="apellidoMaterno" placeholder="Ingresa tu apellido" />
+            </div>
+          </div>
 
-      <div class="form-row">
-        <label>
-          Grupo (opcional)
-          <input type="text" name="grupo" placeholder="3IV12, 6TM1, etc." />
-        </label>
-      </div>
+          <!-- Boleta -->
+          <div class="control">
+            <div class="control-head">
+              <span class="ico" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none">
+                  <path d="M4 7h16v10H4z" stroke="currentColor" stroke-width="2" />
+                  <path d="M7 10h6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                  <path d="M7 14h4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                </svg>
+              </span>
+              <label for="boleta">Boleta <span class="req">*</span></label>
+            </div>
+            <div class="control-body">
+              <span class="ico soft" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none">
+                  <path d="M4 7h16v10H4z" stroke="currentColor" stroke-width="2" />
+                  <path d="M7 10h6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                  <path d="M7 14h4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                </svg>
+              </span>
+              <input type="text" name="boleta" id="boleta" required placeholder="Ingresa tu boleta" />
+            </div>
+          </div>
 
-      <div class="form-row two-cols">
-        <label>
-          Contraseña *
-          <input type="password" name="password" required minlength="6" />
-        </label>
+          <!-- Grupo (full) - SERVER SIDE -->
+          <div class="control span-2">
+            <div class="control-head">
+              <span class="ico teal" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none">
+                  <path d="M7 8h10M7 12h10M7 16h6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                </svg>
+              </span>
+              <label for="grupo">Grupo <span class="req">*</span></label>
+            </div>
 
-        <label>
-          Confirmar contraseña *
-          <input type="password" name="passwordConfirm" required minlength="6" />
-        </label>
-      </div>
+            <div class="control-body">
+              <span class="ico soft" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none">
+                  <path d="M7 8h10M7 12h10M7 16h6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                </svg>
+              </span>
 
-      <p id="registro-error" class="msg msg-error" hidden></p>
-      <p id="registro-success" class="msg msg-success" hidden></p>
+              <select name="grupo" id="grupo" required>
+                <option value="" selected disabled>
+                  {gruposError ? "No se pudieron cargar los grupos" : "Selecciona un grupo"}
+                </option>
 
-      <button type="submit" id="registro-submit" class="btn-primary">
-        Crear cuenta
-      </button>
-    </form>
+                {!gruposError && (grupos ?? []).map((g) => (
+                  <option value={g.Nombre}>{g.Nombre}</option>
+                ))}
+              </select>
+
+              <span class="chev" aria-hidden="true">▾</span>
+            </div>
+
+            {gruposError && (
+              <p class="hint-row">❌ {gruposError.message}</p>
+            )}
+          </div>
+
+          <!-- Email (full) -->
+          <div class="control span-2">
+            <div class="control-head">
+              <span class="ico" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none">
+                  <path d="M4 7h16v10H4z" stroke="currentColor" stroke-width="2"/>
+                  <path d="m4 8 8 6 8-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+              </span>
+              <label for="email">Correo electrónico <span class="req">*</span></label>
+            </div>
+            <div class="control-body">
+              <span class="ico soft" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none">
+                  <path d="M4 7h16v10H4z" stroke="currentColor" stroke-width="2"/>
+                  <path d="m4 8 8 6 8-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+              </span>
+              <input type="email" name="email" id="email" required placeholder="Ingresa tu correo" />
+            </div>
+          </div>
+
+          <!-- Password (full) -->
+          <div class="control span-2">
+            <div class="control-head">
+              <span class="ico" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none">
+                  <path d="M7 11V8a5 5 0 0 1 10 0v3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                  <path d="M6 11h12v9H6z" stroke="currentColor" stroke-width="2"/>
+                </svg>
+              </span>
+              <label for="password">Contraseña <span class="req">*</span></label>
+            </div>
+            <div class="control-body">
+              <span class="ico soft" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none">
+                  <path d="M7 11V8a5 5 0 0 1 10 0v3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                  <path d="M6 11h12v9H6z" stroke="currentColor" stroke-width="2"/>
+                </svg>
+              </span>
+              <input type="password" name="password" id="password" required minlength="6" placeholder="Crea una contraseña" />
+            </div>
+            <p class="hint-row">Mínimo 6 caracteres.</p>
+          </div>
+
+          <!-- Confirm password (full) -->
+          <div class="control span-2">
+            <div class="control-head">
+              <span class="ico" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none">
+                  <path d="M7 11V8a5 5 0 0 1 10 0v3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                  <path d="M6 11h12v9H6z" stroke="currentColor" stroke-width="2"/>
+                  <path d="m9 15 2 2 4-4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+              </span>
+              <label for="passwordConfirm">Confirmar contraseña <span class="req">*</span></label>
+            </div>
+            <div class="control-body">
+              <span class="ico soft" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none">
+                  <path d="M7 11V8a5 5 0 0 1 10 0v3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                  <path d="M6 11h12v9H6z" stroke="currentColor" stroke-width="2"/>
+                  <path d="m9 15 2 2 4-4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+              </span>
+              <input type="password" name="passwordConfirm" id="passwordConfirm" required minlength="6" placeholder="Confirma tu contraseña" />
+            </div>
+          </div>
+        </div>
+
+        <button class="btn" type="submit">
+          <span>Crear cuenta</span>
+          <span class="arrow" aria-hidden="true">→</span>
+        </button>
+
+        <div class="divider soft"></div>
+
+        <p class="legal">
+          Al registrarte, aceptas el uso del sistema conforme a las políticas de tu institución.
+        </p>
+      </form>
+    </div>
   </section>
-</main>
-
-<script type="module">
-  import { createClient } from '@supabase/supabase-js';
-
-  const supabaseUrl = import.meta.env.PUBLIC_SUPABASE_URL;
-  const supabaseAnonKey = import.meta.env.PUBLIC_SUPABASE_ANON_KEY;
-
-  const supabase = createClient(supabaseUrl, supabaseAnonKey);
-
-  const form = document.getElementById('registro-form');
-  const errorEl = document.getElementById('registro-error');
-  const successEl = document.getElementById('registro-success');
-  const submitBtn = document.getElementById('registro-submit');
-
-  form.addEventListener('submit', async (e) => {
-    e.preventDefault();
-    errorEl.hidden = true;
-    successEl.hidden = true;
-    errorEl.textContent = '';
-    successEl.textContent = '';
-
-    const formData = new FormData(form);
-    const nombre = formData.get('nombre')?.toString().trim();
-    const apellidoPaterno = formData.get('apellidoPaterno')?.toString().trim();
-    const apellidoMaterno =
-      formData.get('apellidoMaterno')?.toString().trim() || null;
-    const boleta = formData.get('boleta')?.toString().trim();
-    const grupoNombre = formData.get('grupo')?.toString().trim() || '';
-    const email = formData.get('email')?.toString().trim();
-    const password = formData.get('password')?.toString();
-    const passwordConfirm = formData.get('passwordConfirm')?.toString();
-
-    if (!nombre || !apellidoPaterno || !boleta || !email || !password) {
-      showError('Todos los campos marcados con * son obligatorios.');
-      return;
-    }
-
-    if (password.length < 6) {
-      showError('La contraseña debe tener al menos 6 caracteres.');
-      return;
-    }
-
-    if (password !== passwordConfirm) {
-      showError('Las contraseñas no coinciden.');
-      return;
-    }
-
-    setLoading(true);
-    try {
-      // 1) Crear usuario en Auth
-      const { data, error: signUpError } = await supabase.auth.signUp({
-        email,
-        password,
-      });
-
-      if (signUpError) {
-        throw signUpError;
-      }
-
-      const user = data.user;
-      if (!user) {
-        throw new Error('No se pudo obtener el usuario creado.');
-      }
-
-      // 2) Resolver Grupo_id (si el usuario escribió un grupo)
-      let grupoId = null;
-
-      if (grupoNombre) {
-        // Buscar si ya existe un grupo con ese nombre
-        const { data: grupoExistente, error: grupoSelectError } = await supabase
-          .from('Grupos')
-          .select('id')
-          .eq('Nombre', grupoNombre)
-          .maybeSingle();
-
-        if (grupoSelectError) throw grupoSelectError;
-
-        if (grupoExistente) {
-          grupoId = grupoExistente.id;
-        } else {
-          // Si no existe, lo creamos
-          const { data: grupoNuevo, error: grupoInsertError } = await supabase
-            .from('Grupos')
-            .insert({ Nombre: grupoNombre, Profesor_id: null })
-            .select('id')
-            .single();
-
-          if (grupoInsertError) throw grupoInsertError;
-          grupoId = grupoNuevo.id;
-        }
-      }
-
-      // 3) Insertar en tabla Usuarios
-      const { error: insertError } = await supabase.from('Usuarios').insert({
-        Nombre: nombre,
-        Apellido_Paterno: apellidoPaterno,
-        Apellido_Materno: apellidoMaterno,
-        Boleta: boleta,
-        Grupo_id: grupoId,  // puede ser null si no puso grupo
-        Rol_id: 1,          // 1 = Alumno
-        auth_uid: user.id,  // FK a auth.users.id
-      });
-
-      if (insertError) {
-        throw insertError;
-      }
-
-      showSuccess(
-        '✅ Cuenta creada correctamente. Revisa tu correo si tienes verificación de email activada.'
-      );
-      form.reset();
-    } catch (err) {
-      console.error(err);
-      showError(err.message ?? 'Ocurrió un error al crear la cuenta.');
-    } finally {
-      setLoading(false);
-    }
-  });
-
-  function showError(msg) {
-    errorEl.textContent = msg;
-    errorEl.hidden = false;
-    successEl.hidden = true;
-  }
-
-  function showSuccess(msg) {
-    successEl.textContent = msg;
-    successEl.hidden = false;
-    errorEl.hidden = true;
-  }
-
-  function setLoading(isLoading) {
-    submitBtn.disabled = isLoading;
-    submitBtn.textContent = isLoading ? 'Creando cuenta...' : 'Crear cuenta';
-  }
-</script>
+</Layout>
 
 <style>
-  :root {
-    --bg-page: #f3f4f6;
-    --card-bg: #ffffff;
-    --primary: #2563eb;
-    --primary-hover: #1d4ed8;
-    --text-main: #111827;
-    --text-muted: #6b7280;
-    --border: #e5e7eb;
-    --error: #dc2626;
-    --success: #16a34a;
+  .auth {
+    min-height: calc(100vh - 120px);
+    display: grid;
+    place-items: center;
+    padding: 44px 16px;
+    background: #f6f8fc;
   }
 
-  body {
-    margin: 0;
-    font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
-      sans-serif;
-    background: var(--bg-page);
-    color: var(--text-main);
+  .card {
+    width: min(880px, 100%);
+    background: #ffffff;
+    border: 1px solid rgba(15, 23, 42, 0.10);
+    border-radius: 18px;
+    padding: 28px;
+    box-shadow: 0 14px 38px rgba(2, 6, 23, 0.10);
   }
 
-  .registro-page {
-    min-height: 100vh;
+  .head { text-align: center; }
+  .head h1 { margin: 0; font-size: 2.1rem; letter-spacing: -0.02em; color: #0f172a; }
+  .sub { margin: 10px 0 0; color: #64748b; font-size: 1rem; }
+  .sub a { color: #2563eb; text-decoration: underline; text-underline-offset: 3px; font-weight: 700; }
+
+  .divider { height: 1px; background: rgba(15, 23, 42, 0.10); margin: 18px -28px 20px; }
+  .divider.soft { margin-top: 18px; margin-bottom: 14px; opacity: 0.7; }
+
+  .register-form { display: flex; flex-direction: column; gap: 16px; }
+
+  .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  .span-2 { grid-column: 1 / -1; }
+
+  .req { color: #ef4444; font-weight: 900; }
+
+  .control {
+    border: 1px solid rgba(15, 23, 42, 0.12);
+    border-radius: 12px;
+    overflow: hidden;
+    background: #fff;
+  }
+
+  .control-head,
+  .control-body {
     display: flex;
     align-items: center;
-    justify-content: center;
-    padding: 24px;
+    gap: 10px;
+    padding: 10px 12px;
   }
 
-  .registro-card {
-    width: 100%;
-    max-width: 520px;
-    background: var(--card-bg);
-    border-radius: 16px;
-    box-shadow: 0 18px 45px rgba(15, 23, 42, 0.15);
-    padding: 24px 28px 28px;
+  .control-head {
+    border-bottom: 1px solid rgba(15, 23, 42, 0.10);
+    background: #fff;
   }
 
-  .registro-card h1 {
-    margin: 0 0 4px;
-    font-size: 1.8rem;
-    font-weight: 700;
-    text-align: center;
+  .control-head label {
+    font-size: 0.98rem;
+    font-weight: 800;
+    color: #0f172a;
   }
 
-  .subtitle {
-    margin: 0 0 18px;
-    text-align: center;
-    color: var(--text-muted);
-    font-size: 0.95rem;
-  }
+  .control-body { background: #f8fafc; }
 
-  .registro-form {
-    display: flex;
-    flex-direction: column;
-    gap: 14px;
+  .ico {
+    width: 18px;
+    height: 18px;
+    display: inline-flex;
+    color: #2563eb;
+    flex: 0 0 auto;
   }
+  .ico svg { width: 18px; height: 18px; display: block; }
+  .ico.soft { color: #64748b; opacity: 0.95; }
+  .ico.teal { color: #14b8a6; }
 
-  .form-row {
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
-  }
-
-  .form-row.two-cols {
-    flex-direction: row;
-    column-gap: 24px; /* 👈 más espacio entre los dos inputs */
-  }
-
-  .form-row.two-cols label {
-    flex: 1;
-  }
-
-  label {
-    font-size: 0.9rem;
-    color: var(--text-main);
-  }
-
-  input[type="text"],
-  input[type="email"],
-  input[type="password"] {
-    width: 100%;
-    padding: 9px 10px;
-    border-radius: 8px;
-    border: 1px solid var(--border);
-    font-size: 0.95rem;
-    outline: none;
-    transition: border-color 0.15s, box-shadow 0.15s;
-    box-sizing: border-box;
-  }
-
-  input[type="text"]:focus,
-  input[type="email"]:focus,
-  input[type="password"]:focus {
-    border-color: var(--primary);
-    box-shadow: 0 0 0 1px rgba(37, 99, 235, 0.2);
-  }
-
-  .btn-primary {
-    margin-top: 12px;
-    width: 100%;
-    padding: 10px 14px;
-    border-radius: 999px;
+  input, select {
     border: none;
-    background: var(--primary);
-    color: #fff;
+    outline: none;
+    width: 100%;
+    background: transparent;
     font-size: 1rem;
-    font-weight: 600;
+    color: #0f172a;
+    padding: 2px 0;
+  }
+
+  input::placeholder { color: #94a3b8; }
+
+  select {
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+  }
+
+  .control:has(input:focus),
+  .control:has(select:focus) {
+    border-color: rgba(37, 99, 235, 0.55);
+    box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.10);
+  }
+
+  .chev {
+    color: #64748b;
+    font-size: 1.1rem;
+    line-height: 1;
+    user-select: none;
+  }
+
+  .hint-row {
+    margin: 8px 12px 12px;
+    color: #64748b;
+    font-size: 0.9rem;
+  }
+
+  .btn {
+    margin-top: 6px;
+    width: min(520px, 100%);
+    align-self: center;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    padding: 13px 14px;
+    border-radius: 12px;
+    border: 1px solid rgba(37, 99, 235, 0.35);
+    background: linear-gradient(180deg, #2563eb, #1d4ed8);
+    color: white;
+    font-size: 1.12rem;
+    font-weight: 900;
     cursor: pointer;
-    transition: background 0.15s, transform 0.05s;
+    box-shadow: 0 12px 22px rgba(37, 99, 235, 0.18);
+    transition: transform 0.08s ease, filter 0.15s ease;
+  }
+  .btn:hover { filter: brightness(1.03); }
+  .btn:active { transform: translateY(1px); }
+
+  .arrow { font-size: 1.2rem; opacity: 0.95; }
+
+  .legal {
+    margin: 0;
+    color: #64748b;
+    font-size: 0.92rem;
+    text-align: center;
   }
 
-  .btn-primary:hover:not(:disabled) {
-    background: var(--primary-hover);
-  }
-
-  .btn-primary:active:not(:disabled) {
-    transform: scale(0.98);
-  }
-
-  .btn-primary:disabled {
-    opacity: 0.7;
-    cursor: default;
-  }
-
-  .msg {
-    margin: 4px 0 0;
-    font-size: 0.85rem;
-  }
-
-  .msg-error {
-    color: var(--error);
-  }
-
-  .msg-success {
-    color: var(--success);
-  }
-
-  @media (max-width: 600px) {
-    .registro-card {
-      padding: 20px 18px 22px;
-    }
-
-    .form-row.two-cols {
-      flex-direction: column;
-      row-gap: 10px;
-    }
+  @media (max-width: 720px) {
+    .card { padding: 22px; }
+    .divider { margin-left: -22px; margin-right: -22px; }
+    .grid { grid-template-columns: 1fr; }
+    .span-2 { grid-column: auto; }
   }
 </style>
