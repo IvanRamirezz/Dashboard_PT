@@ -2,7 +2,7 @@
 import DashboardLayout from '../layouts/DashboardLayout.astro';
 import StatCard from '../components/Home/Statcard.astro';
 import '../styles/style.css';
-import cargargrupo from "../../public/assets/cargar.png";
+import Alumnos from "../../public/assets/Alumnos.png";
 import asignar_practica from "../../public/assets/formacion.png";
 
 import { requireProfessor } from "../lib/authGuard";
@@ -31,13 +31,6 @@ const { data: usuario } = await supabase
 if (usuario) {
   nombreCompleto = `${usuario.Nombre} ${usuario.Apellido_Paterno}`;
 }
-
-const { data: excelData } = supabase
-  .storage
-  .from("Excel-CargarGrupo")
-  .getPublicUrl("Archivos/Grupo_Alta.xlsx");
-
-const excelUrl = excelData.publicUrl;
 ---
 
 <DashboardLayout pageTitle="Dashboard">
@@ -53,10 +46,10 @@ const excelUrl = excelData.publicUrl;
     </div>
 
     <div class="actions">
-      <a href={excelUrl} class="action">
+      <a href="/Alumnos" class="action">
         <div>
-          <img src={cargargrupo.src} class="icon" alt="" />
-          Descargar Excel (Alta)
+          <img src={Alumnos.src} class="icon" alt="" />
+          Información Alumnos
         </div>
         <span>→</span>
       </a>

@@ -1,25 +1,15 @@
 ---
 import DashboardLayout from '../layouts/DashboardLayout.astro';
 import '../styles/style.css';
-import CargaGrupo from '../components/Alumnos/Cargar_Grupo';
+import GestionGrupo from '../components/Alumnos/GestionGrupo.jsx';
 import { requireAuth } from "../lib/authGuard";
 
 const authResult = await requireAuth(Astro);
-
-// ⬇️ SI requireAuth devolvió un Response (redirect),
-// lo regresamos y Astro YA NO sigue renderizando la página.
-if (authResult instanceof Response) {
-  return authResult;
-}
-
-// ⬇️ Si llegamos aquí, tenemos usuario válido
+if (authResult instanceof Response) return authResult;
 ---
 
-
-  <DashboardLayout pageTitle="CargarGrupo">
-    <section class="content">
-      <CargaGrupo client:load />
-    </section>
-  </DashboardLayout>
-
-
+<DashboardLayout pageTitle="GestionGrupo">
+  <section class="content">
+    <GestionGrupo client:load />
+  </section>
+</DashboardLayout>
