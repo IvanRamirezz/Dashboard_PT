@@ -89,7 +89,7 @@ export const POST: APIRoute = async ({ request, redirect }) => {
       Nombre: nombre,
       Apellido_Paterno: apellidoPaterno,
       Apellido_Materno: apellidoMaterno,
-      Rol_id: 1,
+      Rol_id: 2,
       auth_uid: user.id,
     });
 
