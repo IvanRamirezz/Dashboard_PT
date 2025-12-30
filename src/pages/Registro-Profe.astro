@@ -1,20 +1,12 @@
 ---
 import Layout from "../layouts/Layout.astro";
-import { createClient } from "@supabase/supabase-js";
 
 export const prerender = false;
+const sp = Astro.url.searchParams;
+const type = sp.get("type") ?? "";
+const emailValue = sp.get("value") ?? "";
+const emailError = type === "email";
 
-// Cliente Supabase (server-side)
-const supabase = createClient(
-  import.meta.env.SUPABASE_URL,
-  import.meta.env.SUPABASE_ANON_KEY
-);
-
-// Traer grupos desde Supabase (igual que tu ejemplo)
-const { data: grupos, error: gruposError } = await supabase
-  .from("Grupos")
-  .select("id, Nombre")
-  .order("Nombre", { ascending: true });
 ---
 
 <Layout title="Register">
@@ -23,14 +15,15 @@ const { data: grupos, error: gruposError } = await supabase
       <header class="head">
         <h1>Registro</h1>
         <p class="sub">
-          ¿Ya tienes una cuenta?
-          <a href="/">Inicia sesión</a>
+          Llena los siguientes campos para darte de alta y comenzar a usar la app de realidad virtual.
+          <br />
+          ¿Ya tienes una cuenta? <a href="/">Inicia sesión</a>
         </p>
       </header>
 
       <div class="divider"></div>
 
-      <form action="/api/auth/register" method="post" class="register-form">
+      <form action="/api/auth/register-profe" method="post" class="register-form" id="registerForm">
         <div class="grid">
           <!-- Nombre(s) -->
           <div class="control">
@@ -72,12 +65,12 @@ const { data: grupos, error: gruposError } = await supabase
                   <path d="M4 20c1.8-3.5 5-5 8-5s6.2 1.5 8 5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
                 </svg>
               </span>
-              <input type="text" name="apellidoPaterno" id="apellidoPaterno" required placeholder="Ingresa tu apellido" />
+              <input type="text" name="apellidoPaterno" id="apellidoPaterno" required placeholder="Ingresa tu apellido paterno" />
             </div>
           </div>
 
           <!-- Apellido materno -->
-          <div class="control">
+          <div class="control span-2">
             <div class="control-head">
               <span class="ico" aria-hidden="true">
                 <svg viewBox="0 0 24 24" fill="none">
@@ -94,94 +87,35 @@ const { data: grupos, error: gruposError } = await supabase
                   <path d="M4 20c1.8-3.5 5-5 8-5s6.2 1.5 8 5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
                 </svg>
               </span>
-              <input type="text" name="apellidoMaterno" id="apellidoMaterno" placeholder="Ingresa tu apellido" />
+              <input type="text" name="apellidoMaterno" id="apellidoMaterno" placeholder="(Opcional)" />
             </div>
           </div>
 
-          <!-- Boleta -->
-          <div class="control">
-            <div class="control-head">
-              <span class="ico" aria-hidden="true">
-                <svg viewBox="0 0 24 24" fill="none">
-                  <path d="M4 7h16v10H4z" stroke="currentColor" stroke-width="2" />
-                  <path d="M7 10h6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-                  <path d="M7 14h4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-                </svg>
-              </span>
-              <label for="boleta">Boleta <span class="req">*</span></label>
-            </div>
-            <div class="control-body">
-              <span class="ico soft" aria-hidden="true">
-                <svg viewBox="0 0 24 24" fill="none">
-                  <path d="M4 7h16v10H4z" stroke="currentColor" stroke-width="2" />
-                  <path d="M7 10h6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-                  <path d="M7 14h4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-                </svg>
-              </span>
-              <input type="text" name="boleta" id="boleta" required placeholder="Ingresa tu boleta" />
-            </div>
+          <!-- Email -->
+        <div class={`control span-2 ${emailError ? "is-error" : ""}`} id="emailControl">
+          <div class="control-head">
+            <label for="email">Correo electrónico <span class="req">*</span></label>
           </div>
 
-          <!-- Grupo (full) - SERVER SIDE -->
-          <div class="control span-2">
-            <div class="control-head">
-              <span class="ico teal" aria-hidden="true">
-                <svg viewBox="0 0 24 24" fill="none">
-                  <path d="M7 8h10M7 12h10M7 16h6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-                </svg>
-              </span>
-              <label for="grupo">Grupo <span class="req">*</span></label>
-            </div>
-
-            <div class="control-body">
-              <span class="ico soft" aria-hidden="true">
-                <svg viewBox="0 0 24 24" fill="none">
-                  <path d="M7 8h10M7 12h10M7 16h6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-                </svg>
-              </span>
-
-              <select name="grupo" id="grupo" required>
-                <option value="" selected disabled>
-                  {gruposError ? "No se pudieron cargar los grupos" : "Selecciona un grupo"}
-                </option>
-
-                {!gruposError && (grupos ?? []).map((g) => (
-                  <option value={g.Nombre}>{g.Nombre}</option>
-                ))}
-              </select>
-
-              <span class="chev" aria-hidden="true">▾</span>
-            </div>
-
-            {gruposError && (
-              <p class="hint-row">❌ {gruposError.message}</p>
-            )}
+          <div class="control-body">
+            <input
+              type="email"
+              name="email"
+              id="email"
+              required
+              placeholder="Ingresa tu correo"
+              value={emailValue}
+            />
           </div>
 
-          <!-- Email (full) -->
-          <div class="control span-2">
-            <div class="control-head">
-              <span class="ico" aria-hidden="true">
-                <svg viewBox="0 0 24 24" fill="none">
-                  <path d="M4 7h16v10H4z" stroke="currentColor" stroke-width="2"/>
-                  <path d="m4 8 8 6 8-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                </svg>
-              </span>
-              <label for="email">Correo electrónico <span class="req">*</span></label>
-            </div>
-            <div class="control-body">
-              <span class="ico soft" aria-hidden="true">
-                <svg viewBox="0 0 24 24" fill="none">
-                  <path d="M4 7h16v10H4z" stroke="currentColor" stroke-width="2"/>
-                  <path d="m4 8 8 6 8-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                </svg>
-              </span>
-              <input type="email" name="email" id="email" required placeholder="Ingresa tu correo" />
-            </div>
-          </div>
+          {emailError && (
+            <p class="hint-row hint-error">Este correo ya existe.</p>
+          )}
+        </div>
 
-          <!-- Password (full) -->
-          <div class="control span-2">
+
+          <!-- Password -->
+          <div class="control span-2" id="passwordControl">
             <div class="control-head">
               <span class="ico" aria-hidden="true">
                 <svg viewBox="0 0 24 24" fill="none">
@@ -203,8 +137,8 @@ const { data: grupos, error: gruposError } = await supabase
             <p class="hint-row">Mínimo 6 caracteres.</p>
           </div>
 
-          <!-- Confirm password (full) -->
-          <div class="control span-2">
+          <!-- Confirm password -->
+          <div class="control span-2" id="passwordConfirmControl">
             <div class="control-head">
               <span class="ico" aria-hidden="true">
                 <svg viewBox="0 0 24 24" fill="none">
@@ -225,168 +159,121 @@ const { data: grupos, error: gruposError } = await supabase
               </span>
               <input type="password" name="passwordConfirm" id="passwordConfirm" required minlength="6" placeholder="Confirma tu contraseña" />
             </div>
+
+            <p class="hint-row hint-error" id="passwordMismatch" hidden>
+              Las contraseñas no coinciden.
+            </p>
           </div>
         </div>
 
-        <button class="btn" type="submit">
+        <button class="btn" type="submit" id="submitBtn">
           <span>Crear cuenta</span>
           <span class="arrow" aria-hidden="true">→</span>
         </button>
-
-        <div class="divider soft"></div>
-
-        <p class="legal">
-          Al registrarte, aceptas el uso del sistema conforme a las políticas de tu institución.
-        </p>
       </form>
     </div>
   </section>
 </Layout>
 
 <style>
-  .auth {
-    min-height: calc(100vh - 120px);
-    display: grid;
-    place-items: center;
-    padding: 44px 16px;
-    background: #f6f8fc;
+  .auth{min-height:calc(100vh - 120px);display:grid;place-items:center;padding:44px 16px;background:#f6f8fc;}
+  .card{width:min(880px,100%);background:#fff;border:1px solid rgba(15,23,42,.10);border-radius:18px;padding:28px;box-shadow:0 14px 38px rgba(2,6,23,.10);}
+  .head{text-align:center;}
+  .head h1{margin:0;font-size:2.1rem;letter-spacing:-.02em;color:#0f172a;}
+  .sub{margin:10px 0 0;color:#64748b;font-size:1rem;}
+  .sub a{color:#2563eb;text-decoration:underline;text-underline-offset:3px;font-weight:700;}
+  .divider{height:1px;background:rgba(15,23,42,.10);margin:18px -28px 20px;}
+  .divider.soft{margin:18px -28px 14px;background:rgba(15,23,42,.07);opacity:.7;}
+
+  .register-form{display:flex;flex-direction:column;gap:16px;}
+  .grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+  .span-2{grid-column:1 / -1;}
+  .req{color:#ef4444;font-weight:900;}
+
+  .control{border:1px solid rgba(15,23,42,.12);border-radius:12px;overflow:hidden;background:#fff;}
+  .control-head,.control-body{display:flex;align-items:center;gap:10px;padding:10px 12px;}
+  .control-head{border-bottom:1px solid rgba(15,23,42,.10);background:#fff;}
+  .control-head label{font-size:.98rem;font-weight:800;color:#0f172a;}
+  .control-body{background:#f8fafc;}
+
+  .ico{width:18px;height:18px;display:inline-flex;color:#2563eb;flex:0 0 auto;}
+  .ico svg{width:18px;height:18px;display:block;}
+  .ico.soft{color:#64748b;opacity:.95;}
+
+  input{border:none;outline:none;width:100%;background:transparent;font-size:1rem;color:#0f172a;padding:2px 0;}
+  input::placeholder{color:#94a3b8;}
+
+  .hint-row{margin:8px 12px 12px;color:#64748b;font-size:.9rem;}
+  .hint-error{color:#ef4444;font-weight:800;}
+
+  .btn{
+    margin-top:6px;
+    width:min(520px,100%);
+    align-self:center;
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    gap:10px;
+    padding:13px 14px;
+    border-radius:12px;
+    border:1px solid rgba(37,99,235,.35);
+    background:linear-gradient(180deg,#2563eb,#1d4ed8);
+    color:white;
+    font-size:1.12rem;
+    font-weight:900;
+    cursor:pointer;
+    box-shadow:0 12px 22px rgba(37,99,235,.18);
   }
+  .btn:active{transform:translateY(1px);}
+  .arrow{font-size:1.2rem;opacity:.95;}
 
-  .card {
-    width: min(880px, 100%);
-    background: #ffffff;
-    border: 1px solid rgba(15, 23, 42, 0.10);
-    border-radius: 18px;
-    padding: 28px;
-    box-shadow: 0 14px 38px rgba(2, 6, 23, 0.10);
-  }
+  .control.is-error{border-color:rgba(239,68,68,.75);box-shadow:0 0 0 4px rgba(239,68,68,.12);}
+  .control.is-error .control-body{background:rgba(239,68,68,.06);}
+  .control.is-error .ico{color:#ef4444;}
 
-  .head { text-align: center; }
-  .head h1 { margin: 0; font-size: 2.1rem; letter-spacing: -0.02em; color: #0f172a; }
-  .sub { margin: 10px 0 0; color: #64748b; font-size: 1rem; }
-  .sub a { color: #2563eb; text-decoration: underline; text-underline-offset: 3px; font-weight: 700; }
-
-  .divider { height: 1px; background: rgba(15, 23, 42, 0.10); margin: 18px -28px 20px; }
-  .divider.soft { margin-top: 18px; margin-bottom: 14px; opacity: 0.7; }
-
-  .register-form { display: flex; flex-direction: column; gap: 16px; }
-
-  .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
-  .span-2 { grid-column: 1 / -1; }
-
-  .req { color: #ef4444; font-weight: 900; }
-
-  .control {
-    border: 1px solid rgba(15, 23, 42, 0.12);
-    border-radius: 12px;
-    overflow: hidden;
-    background: #fff;
-  }
-
-  .control-head,
-  .control-body {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    padding: 10px 12px;
-  }
-
-  .control-head {
-    border-bottom: 1px solid rgba(15, 23, 42, 0.10);
-    background: #fff;
-  }
-
-  .control-head label {
-    font-size: 0.98rem;
-    font-weight: 800;
-    color: #0f172a;
-  }
-
-  .control-body { background: #f8fafc; }
-
-  .ico {
-    width: 18px;
-    height: 18px;
-    display: inline-flex;
-    color: #2563eb;
-    flex: 0 0 auto;
-  }
-  .ico svg { width: 18px; height: 18px; display: block; }
-  .ico.soft { color: #64748b; opacity: 0.95; }
-  .ico.teal { color: #14b8a6; }
-
-  input, select {
-    border: none;
-    outline: none;
-    width: 100%;
-    background: transparent;
-    font-size: 1rem;
-    color: #0f172a;
-    padding: 2px 0;
-  }
-
-  input::placeholder { color: #94a3b8; }
-
-  select {
-    appearance: none;
-    -webkit-appearance: none;
-    -moz-appearance: none;
-  }
-
-  .control:has(input:focus),
-  .control:has(select:focus) {
-    border-color: rgba(37, 99, 235, 0.55);
-    box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.10);
-  }
-
-  .chev {
-    color: #64748b;
-    font-size: 1.1rem;
-    line-height: 1;
-    user-select: none;
-  }
-
-  .hint-row {
-    margin: 8px 12px 12px;
-    color: #64748b;
-    font-size: 0.9rem;
-  }
-
-  .btn {
-    margin-top: 6px;
-    width: min(520px, 100%);
-    align-self: center;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    gap: 10px;
-    padding: 13px 14px;
-    border-radius: 12px;
-    border: 1px solid rgba(37, 99, 235, 0.35);
-    background: linear-gradient(180deg, #2563eb, #1d4ed8);
-    color: white;
-    font-size: 1.12rem;
-    font-weight: 900;
-    cursor: pointer;
-    box-shadow: 0 12px 22px rgba(37, 99, 235, 0.18);
-    transition: transform 0.08s ease, filter 0.15s ease;
-  }
-  .btn:hover { filter: brightness(1.03); }
-  .btn:active { transform: translateY(1px); }
-
-  .arrow { font-size: 1.2rem; opacity: 0.95; }
-
-  .legal {
-    margin: 0;
-    color: #64748b;
-    font-size: 0.92rem;
-    text-align: center;
-  }
-
-  @media (max-width: 720px) {
-    .card { padding: 22px; }
-    .divider { margin-left: -22px; margin-right: -22px; }
-    .grid { grid-template-columns: 1fr; }
-    .span-2 { grid-column: auto; }
+  @media (max-width:720px){
+    .card{padding:22px;}
+    .divider{margin-left:-22px;margin-right:-22px;}
+    .grid{grid-template-columns:1fr;}
+    .span-2{grid-column:auto;}
   }
 </style>
+
+<script is:inline>
+  document.addEventListener("DOMContentLoaded", () => {
+    const form = document.getElementById("registerForm");
+    const pass = document.getElementById("password");
+    const confirm = document.getElementById("passwordConfirm");
+    const mismatchMsg = document.getElementById("passwordMismatch");
+
+    const passControl = document.getElementById("passwordControl");
+    const confirmControl = document.getElementById("passwordConfirmControl");
+
+    if (!(form instanceof HTMLFormElement)) return;
+    if (!(pass instanceof HTMLInputElement)) return;
+    if (!(confirm instanceof HTMLInputElement)) return;
+
+    const validate = () => {
+      const mismatch = pass.value && confirm.value && pass.value !== confirm.value;
+
+      passControl?.classList.toggle("is-error", mismatch);
+      confirmControl?.classList.toggle("is-error", mismatch);
+
+      confirm.setCustomValidity(mismatch ? "Las contraseñas no coinciden" : "");
+      mismatchMsg?.toggleAttribute("hidden", !mismatch);
+
+      return !mismatch;
+    };
+
+    pass.addEventListener("input", validate);
+    confirm.addEventListener("input", validate);
+
+    form.addEventListener("submit", (e) => {
+      validate();
+      if (!form.checkValidity()) {
+        e.preventDefault();
+        form.reportValidity();
+      }
+    });
+  });
+</script>
