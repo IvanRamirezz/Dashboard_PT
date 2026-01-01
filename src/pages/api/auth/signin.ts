@@ -9,6 +9,7 @@ export const POST: APIRoute = async ({ request, cookies, redirect }) => {
   const password = formData.get("password")?.toString();
 
   if (!email || !password) {
+    // Puedes también redirigir con otro error si quieres
     return new Response("Email and password are required", { status: 400 });
   }
 
@@ -18,15 +19,27 @@ export const POST: APIRoute = async ({ request, cookies, redirect }) => {
   });
 
   if (error) {
-    return new Response(error.message, { status: 500 });
+    // Supabase suele mandar "Invalid login credentials" para credenciales incorrectas
+    const msg = (error.message || "").toLowerCase();
+    const isInvalidCreds =
+      msg.includes("invalid login credentials") ||
+      msg.includes("invalid") ||
+      error.status === 400 ||
+      error.status === 401;
+
+    if (isInvalidCreds) {
+      // ⬇️ CAMBIA "/login" por tu ruta real del login
+      return redirect("/?error=invalid");
+    }
+
+    // Para otros errores (red, configuración, etc.)
+    return redirect("/?error=unexpected");
   }
 
   const { access_token, refresh_token } = data.session;
-  cookies.set("sb-access-token", access_token, {
-    path: "/",
-  });
-  cookies.set("sb-refresh-token", refresh_token, {
-    path: "/",
-  });
+
+  cookies.set("sb-access-token", access_token, { path: "/" });
+  cookies.set("sb-refresh-token", refresh_token, { path: "/" });
+
   return redirect("/Dashboard");
 };

@@ -55,7 +55,57 @@ if (accessToken && refreshToken) {
       </div>
     </div>
   </div>
+  <!-- ✅ Modal de error -->
+  <div id="authErrorModal" class="modal-overlay" hidden>
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+      <h2 id="modalTitle" class="modal-title">Credenciales incorrectas</h2>
+      <p class="modal-text">
+        El correo o la contraseña no son correctos. Inténtalo de nuevo.
+      </p>
+
+      <div class="modal-actions">
+        <button type="button" id="closeModalBtn" class="modal-btn">
+          Entendido
+        </button>
+      </div>
+    </div>
+  </div>
 </body>
+
+<script is:inline>
+  const params = new URLSearchParams(window.location.search);
+  const err = params.get("error");
+
+  const overlay = document.getElementById("authErrorModal");
+  const closeBtn = document.getElementById("closeModalBtn");
+
+  function openModal() {
+    overlay.hidden = false;
+    document.body.style.overflow = "hidden";
+    closeBtn?.focus?.();
+  }
+
+  function closeModal() {
+    overlay.hidden = true;
+    document.body.style.overflow = "";
+    // Limpia el query param para que no vuelva a salir al recargar
+    window.history.replaceState({}, "", window.location.pathname);
+  }
+
+  if (err === "invalid") openModal();
+
+  closeBtn?.addEventListener("click", closeModal);
+
+  // Cerrar si hacen click fuera del modal
+  overlay?.addEventListener("click", (e) => {
+    if (e.target === overlay) closeModal();
+  });
+
+  // Cerrar con ESC
+  window.addEventListener("keydown", (e) => {
+    if (e.key === "Escape" && overlay && !overlay.hidden) closeModal();
+  });
+</script>
 
 <style>
   /* Si ya lo manejas en login.css, puedes borrar este bloque */
@@ -86,4 +136,56 @@ if (accessToken && refreshToken) {
     text-underline-offset: 3px;
     margin-left: 6px;
   }
+
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(2, 6, 23, 0.55);
+  display: grid;
+  place-items: center;
+  z-index: 9999;
+  padding: 16px;
+}
+
+/* ✅ IMPORTANTE: respeta el atributo hidden */
+.modal-overlay[hidden] {
+  display: none !important;
+}
+
+.modal {
+  width: min(420px, 100%);
+  background: #ffffff;
+  border-radius: 14px;
+  padding: 18px 18px 16px;
+  box-shadow: 0 18px 60px rgba(2, 6, 23, 0.25);
+  border: 1px solid rgba(15, 23, 42, 0.08);
+}
+
+.modal-title {
+  margin: 0 0 8px;
+  font-size: 1.15rem;
+  color: #0f172a;
+}
+
+.modal-text {
+  margin: 0 0 14px;
+  color: #475569;
+  line-height: 1.4;
+}
+
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.modal-btn {
+  border: 0;
+  border-radius: 10px;
+  padding: 10px 14px;
+  font-weight: 700;
+  cursor: pointer;
+  background: #2563eb;
+  color: white;
+}
+
 </style>

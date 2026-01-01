@@ -98,7 +98,7 @@ export const POST: APIRoute = async ({ request, redirect }) => {
     }
 
     // 3) Redirect a login
-    return redirect("/signin");
+    return redirect("/Exitoso");
   } catch (e: any) {
     console.error(e);
     return new Response(`Unexpected error: ${e.message}`, { status: 500 });

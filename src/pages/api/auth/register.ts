@@ -102,7 +102,7 @@ export const POST: APIRoute = async ({ request, redirect }) => {
       return new Response(`DB error: ${insertError.message}`, { status: 500 });
     }
 
-    return redirect("/signin");
+    return redirect("/Exitoso");
   } catch (e: any) {
     console.error(e);
     return new Response(`Unexpected error: ${e.message}`, { status: 500 });
